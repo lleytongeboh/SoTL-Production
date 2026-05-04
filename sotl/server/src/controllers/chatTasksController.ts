@@ -357,32 +357,60 @@ export async function undoChatTask(req: AuthRequest, res: Response, next: NextFu
 
 export async function listMyProjectsForChat(req: AuthRequest, res: Response, next: NextFunction) {
   try {
-    const userId = String(req.user!.userId);
+    const userId = String(req.user!.userId || "");
+    if (!userId || !mongoose.isValidObjectId(userId)) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
-    // Step 1: collect all projectIds where this user has tasks
-    // - as leader (createdBy)
-    // - as member (assignedTo)
-    const projectIds = await ChatTask.distinct("projectId", {
-      $or: [{ createdBy: userId }, { assignedTo: userId }],
+    const uid = new mongoose.Types.ObjectId(userId);
+
+    const groups = await Group.find({
+      "team_members.student_id": uid,
+      project: { $exists: true, $ne: null },
+    })
+      .select("name batch project team_members")
+      .lean();
+
+    const groupProjectIds = groups
+      .map((group: any) => group.project)
+      .filter(Boolean);
+
+    const taskProjectIds = await ChatTask.distinct("projectId", {
+      $or: [{ createdBy: uid }, { assignedTo: uid }],
     });
 
-    // If no tasks yet, return empty (frontend can show "no projects")
-    if (!projectIds || projectIds.length === 0) {
+    const projectIds = Array.from(
+      new Map(
+        [...groupProjectIds, ...taskProjectIds]
+          .filter(Boolean)
+          .map((id: any) => [String(id), id])
+      ).values()
+    );
+
+    if (projectIds.length === 0) {
       return res.json({ count: 0, results: [] });
     }
 
-    // Step 2: fetch project titles
-    // ✅ This assumes you have a Project collection with "title" (or "name")
     const projects = await Project.find({ _id: { $in: projectIds } })
-      .select("title name") // some schemas use "name"
+      .select("title name")
       .lean();
 
-    // Map back to the ids; keep order stable
+    const groupByProject = new Map(
+      groups.map((group: any) => [String(group.project), group])
+    );
+
     const results = projectIds.map((pid: any) => {
       const p = projects.find((x: any) => String(x._id) === String(pid));
+      const group = groupByProject.get(String(pid));
+      const member = group?.team_members?.find(
+        (m: any) => String(m.student_id) === userId
+      );
       return {
         id: String(pid),
         title: (p as any)?.title || (p as any)?.name || `Project ${String(pid).slice(0, 6)}`,
+        groupId: group?._id ? String(group._id) : undefined,
+        groupName: group?.name,
+        groupRole: member?.group_role,
       };
     });
 
