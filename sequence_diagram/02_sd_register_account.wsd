@@ -1,0 +1,58 @@
+@startuml
+actor Lecturer
+boundary UploadPage
+control FileController
+control FileService
+control ExcelParser
+control RegistrationController
+control RegistrationService
+queue EmailQueue
+control EmailWorker
+control EmailService
+database Database
+
+Lecturer -> UploadPage: Upload Excel file
+UploadPage -> FileController: POST /api/upload
+FileController -> FileService: Validate file format (Excel)
+FileService --> FileController: Return validation result
+FileController --> UploadPage: Return validation result
+
+alt File is invalid
+    UploadPage -> Lecturer: Display error message
+else File is valid
+    FileController -> FileService: Save the file
+    FileService -> ExcelParser: Parse the Excel file
+    ExcelParser -> ExcelParser: Extract student data (email, matric number)
+    ExcelParser -> ExcelParser: Validate extracted data
+    ExcelParser --> FileService: Return extracted and validated student data
+    FileService --> FileController: Return extracted and validated student data
+    FileController --> UploadPage: Return extracted and validated student data
+
+    alt Data is invalid
+        UploadPage -> Lecturer: Display error message
+    else Data is valid
+        loop For each student
+            UploadPage -> RegistrationController: POST /api/register
+            RegistrationController -> RegistrationService: Register student account
+            RegistrationService -> RegistrationService: Generate auto-generated password
+            RegistrationService -> Database: Save student account with email, matric number, and password
+            Database --> RegistrationService: Return save status
+            RegistrationService --> RegistrationController: Return save status
+            RegistrationController --> UploadPage: Return save status
+
+            alt Account creation failed
+                UploadPage -> Lecturer: Display error message
+            else Account creation succeeded
+                RegistrationController -> EmailQueue: Add email task to queue
+                EmailQueue -> EmailWorker: Process email tasks
+                EmailWorker -> EmailService: Send email with auto-generated password
+                EmailService -> StudentEmail: Send email
+                EmailService --> EmailWorker: Return email status
+                EmailWorker --> EmailQueue: Return task status
+            end
+        end
+
+        UploadPage -> Lecturer: Display registration process status
+    end
+end
+@enduml

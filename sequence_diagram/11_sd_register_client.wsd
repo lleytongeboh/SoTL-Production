@@ -1,0 +1,47 @@
+@startuml
+actor Lecturer
+boundary ClientAccountPage
+control AccountController
+control AccountService
+control EmailService
+database Database
+boundary NotificationService
+
+Lecturer -> ClientAccountPage: Enter client details (name, email)
+ClientAccountPage -> AccountController: Submit client details for account creation
+
+AccountController -> AccountService: Request account creation with client details
+AccountService -> AccountService: Generate auto-generated password
+AccountService -> Database: Save client account with encrypted password
+Database --> AccountService: Return save status
+
+alt Account creation successful
+    AccountService -> EmailService: Send login credentials to client
+    EmailService -> NotificationService: Create email with login details and password
+    NotificationService -> ClientEmail: Send email with credentials and instructions
+    NotificationService --> EmailService: Return email status
+    EmailService --> AccountService: Return email sending status
+    AccountService -> AccountController: Confirm successful account creation
+    AccountController --> ClientAccountPage: Display success message
+else Account creation failed
+    AccountService --> AccountController: Return error status
+    AccountController --> ClientAccountPage: Display error message
+end
+
+Lecturer -> ClientAccountPage: Request to resend login credentials
+ClientAccountPage -> AccountController: Request resend of login credentials
+AccountController -> AccountService: Regenerate new password and update account
+AccountService -> AccountService: Generate new password
+AccountService -> AccountService: Hash new password
+AccountService -> Database: Update client account with new hashed password
+Database --> AccountService: Return update status
+
+AccountService -> EmailService: Send new login credentials to client
+EmailService -> NotificationService: Create email with new login details and password
+NotificationService -> ClientEmail: Send email with new credentials and instructions
+NotificationService --> EmailService: Return email status
+EmailService --> AccountService: Return email sending status
+AccountService -> AccountController: Confirm resend of credentials
+AccountController --> ClientAccountPage: Display resend confirmation
+
+@enduml

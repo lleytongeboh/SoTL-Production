@@ -1,0 +1,46 @@
+@startuml
+|User|
+:Request password reset;
+:Enter email address;
+
+|ForgotPasswordPage|
+:Receive password reset request;
+:Send reset link to AuthService;
+
+|AuthService|
+:Generate reset token;
+:Store token and expiration in Database;
+:Send reset email with token to User;
+
+|User|
+:Receive password reset email;
+:Click on reset link in email;
+:Enter new password and confirm;
+
+|ResetPasswordPage|
+:Receive new password submission;
+:Verify reset token validity;
+if (Token valid?) then (yes)
+    :Update password in Database;
+    |EmailService|
+    :Send password reset confirmation;
+    :Notify ForgotPasswordPage of success;
+else (no)
+    :Notify ForgotPasswordPage of failure;
+endif
+
+|ForgotPasswordPage|
+if (Password reset successful?) then (yes)
+    :Show success message;
+else (no)
+    :Show error message;
+endif
+
+|User|
+if (Password reset successful?) then (yes)
+    :Login with new password;
+else (no)
+    :Retry or contact support;
+endif
+
+@enduml

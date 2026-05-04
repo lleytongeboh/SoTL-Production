@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Evaluation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #333333;
+    }
+    p {
+      color: #666666;
+      line-height: 1.6;
+    }
+    .button {
+      display: inline-block;
+      background-color: #2196F3;
+      color: #ffffff;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #aaaaaa;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Hello, {{clientName}}!</h1>
+    <p>We would like to invite you to complete the evaluation for the project <strong>{{projectName}}</strong>, which was led by <strong>{{leaderName}}</strong></p>
+    <p>Simply click the button below to proceed:</p>
+    <a href="{{evaluationLink}}" class="button">Evaluate the Project</a>
+    <p>If the button doesn’t work, copy and paste the following URL into your browser:</p>
+    <p><a href="{{evaluationLink}}">{{evaluationLink}}</a></p>
+    <div class="footer">
+      <p>If you have any questions, please contact the project leader <strong>{{leaderName}}</strong> at <a href="mailto:{{leaderEmail}}">{{leaderEmail}}</a>.</p>
+      <p>&copy; 2024 UNIMAS. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>

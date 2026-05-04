@@ -1,0 +1,24 @@
+@startuml
+left to right direction
+actor "Lecturer" as a1
+actor "Student" as a2
+actor "Team Leader" as a3
+actor "Team Member" as a4
+
+package "Create Evaluation" {
+    usecase "Create Evaluation" as UC1
+    usecase "Assign Evaluation" as UC2
+    usecase "View Evaluation" as UC3
+}
+
+a4 --|> a2
+a3 --|> a4
+
+a1 -- UC1
+a1 -- UC2
+a1 -- UC3
+
+UC2 -- a4
+UC3 -- a4
+
+@enduml

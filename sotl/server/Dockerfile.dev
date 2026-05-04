@@ -1,0 +1,19 @@
+# Build Stage
+FROM node:20 AS build
+
+WORKDIR /app
+
+COPY package*.json .
+
+RUN npm install
+
+COPY . .
+
+# Install ts-node and tsconfig-paths
+RUN npm install -g ts-node tsconfig-paths
+
+RUN npm run build
+
+EXPOSE 5000
+
+CMD ["npm", "run", "dev"]

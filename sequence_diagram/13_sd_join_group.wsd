@@ -1,0 +1,40 @@
+@startuml
+actor GroupMember
+boundary JoinTeamPage
+control JoinRequestService
+database Database
+control TeamLeaderService
+boundary NotificationService
+
+GroupMember -> JoinTeamPage: View available teams
+GroupMember -> JoinTeamPage: Search for specific teams
+GroupMember -> JoinTeamPage: Submit request to join a selected team
+JoinTeamPage -> JoinRequestService: Send join request with selected team details
+
+JoinRequestService -> Database: Store join request
+Database --> JoinRequestService: Return request status
+
+alt Request successful
+    JoinRequestService -> TeamLeaderService: Notify team leader of new join request
+    TeamLeaderService -> TeamLeader: Display join request for review
+
+    alt Team leader accepts request
+        TeamLeaderService -> Database: Update team membership
+        Database --> TeamLeaderService: Return update status
+        TeamLeaderService -> NotificationService: Notify GroupMember of acceptance
+        NotificationService -> GroupMember: Send acceptance notification
+        NotificationService --> TeamLeaderService: Return notification status
+    else Team leader rejects request
+        TeamLeaderService -> NotificationService: Notify GroupMember of rejection
+        NotificationService -> GroupMember: Send rejection notification
+        NotificationService --> TeamLeaderService: Return notification status
+    end
+
+    JoinRequestService --> JoinTeamPage: Return request status
+    JoinTeamPage -> GroupMember: Display request status
+else Request failed
+    JoinRequestService --> JoinTeamPage: Return error status
+    JoinTeamPage -> GroupMember: Display error message
+end
+
+@enduml

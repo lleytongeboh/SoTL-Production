@@ -1,0 +1,58 @@
+@startuml
+|Student|
+start
+:View available teams;
+
+|JoinTeamPage|
+:Search for specific teams;
+
+:Submit request to join a selected team;
+
+|JoinRequestService|
+:Send join request with selected team details;
+
+:Return request status;
+
+if (Request successful?) then (yes)
+    :Notify team leader of new join request;
+
+    |TeamLeaderService|
+    :Display join request for review;
+
+    if (Team leader accepts request?) then (yes)
+        :Update team membership;
+
+        |NotificationService|
+        :Notify Student of acceptance;
+        
+        :Send acceptance notification;
+
+        :Return notification status;
+    else (no)
+        :Notify Student of rejection;
+
+        :Send rejection notification;
+
+        :Return notification status;
+    endif
+
+    |JoinRequestService|
+    :Return request status;
+
+    |JoinTeamPage|
+    :Display request status;
+
+    |Student|
+    :View request status;
+else (no)
+    :Return error status;
+
+    |JoinTeamPage|
+    :Display error message;
+
+    |Student|
+    :View error message;
+endif
+
+stop
+@enduml

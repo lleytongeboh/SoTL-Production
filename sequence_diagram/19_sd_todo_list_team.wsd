@@ -1,0 +1,57 @@
+@startuml
+actor TeamMember
+boundary ToDoListInterface
+control TaskController
+control TaskManagementService
+boundary NotificationService
+database Database
+
+TeamMember -> ToDoListInterface: Access to-do list and task list page
+ToDoListInterface -> TeamMember: Display interface with options to add, edit, delete tasks
+
+TeamMember -> ToDoListInterface: Create new to-do list or task
+ToDoListInterface -> TaskController: Request to create task
+TaskController -> TaskManagementService: Create task
+TaskManagementService -> Database: Store new task details
+Database --> TaskManagementService: Confirm task creation
+TaskManagementService --> TaskController: Confirm task creation
+TaskController --> ToDoListInterface: Confirm task creation
+ToDoListInterface --> TeamMember: Display updated task list
+TaskManagementService -> NotificationService: Notify team members of new task creation
+NotificationService -> TeamMember: Send notification of new task creation
+
+TeamMember -> ToDoListInterface: Assign task to a team member
+ToDoListInterface -> TaskController: Request to assign task
+TaskController -> TaskManagementService: Assign task
+TaskManagementService -> Database: Update task with assignee details
+Database --> TaskManagementService: Confirm task update
+TaskManagementService --> TaskController: Confirm task assignment
+TaskController --> ToDoListInterface: Confirm task assignment
+ToDoListInterface --> TeamMember: Display updated task details
+TaskManagementService -> NotificationService: Notify assigned team member of new task assignment
+NotificationService -> TeamMember: Send notification of new task assignment
+
+TeamMember -> ToDoListInterface: Update task status or details
+ToDoListInterface -> TaskController: Request to update task
+TaskController -> TaskManagementService: Update task
+TaskManagementService -> Database: Update task details
+Database --> TaskManagementService: Confirm task update
+TaskManagementService --> TaskController: Confirm task update
+TaskController --> ToDoListInterface: Confirm task update
+ToDoListInterface --> TeamMember: Display updated task details
+
+TeamMember -> ToDoListInterface: Remove task from list
+ToDoListInterface -> TaskController: Request to delete task
+TaskController -> TaskManagementService: Delete task
+TaskManagementService -> Database: Remove task details
+Database --> TaskManagementService: Confirm task removal
+TaskManagementService --> TaskController: Confirm task removal
+TaskController --> ToDoListInterface: Confirm task removal
+ToDoListInterface --> TeamMember: Display updated task list
+
+TaskManagementService -> NotificationService: Send reminders for upcoming deadlines and status changes
+NotificationService -> TeamMember: Send reminder notifications
+
+TaskManagementService -> TeamMember: Display task progress and updates
+
+@enduml

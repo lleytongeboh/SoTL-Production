@@ -1,0 +1,29 @@
+@startuml
+left to right direction
+actor "Lecturer" as a1
+actor "Student" as a2
+actor "Team Leader" as a3
+actor "Team Member" as a4
+
+package "Manage Group" {
+  usecase "Create Group" as UC1
+  usecase "Add Group Member" as UC2
+  usecase "Remove Group Member" as UC3
+  usecase "View Group Info" as UC4
+  usecase "Edit Group Info" as UC5
+}
+
+a4 --|> a2
+a3 --|> a4
+
+
+a1 -- UC3
+a1 -- UC4
+
+UC1 -- a3
+UC2 -- a3
+
+UC4 -- a4
+UC5 -- a4
+
+@enduml

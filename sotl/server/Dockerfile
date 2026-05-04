@@ -1,0 +1,27 @@
+# Build Stage
+FROM node:23.0.0 AS build
+
+WORKDIR /app
+
+COPY package*.json .
+
+RUN npm install
+
+COPY . .
+
+# RUN npm run build
+
+# Production Stage
+FROM node AS production
+
+WORKDIR /app
+
+COPY package*.json .
+
+RUN npm ci --only=production
+
+COPY --from=build /app/dist ./dist
+
+EXPOSE 5000
+
+CMD ["node", "dist/index.js"]

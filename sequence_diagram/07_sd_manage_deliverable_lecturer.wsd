@@ -1,0 +1,44 @@
+@startuml
+actor Lecturer
+boundary DeliverablesManagementInterface
+control DeliverablesController
+control DeliverablesService
+control NotificationService
+database Database
+
+== Deliverables Management ==
+
+Lecturer -> DeliverablesManagementInterface: Request list of project deliverables
+DeliverablesManagementInterface -> DeliverablesController: GET /api/deliverables
+DeliverablesController -> DeliverablesService: Retrieve project deliverables
+DeliverablesService -> Database: Fetch project deliverables
+Database --> DeliverablesService: Return project deliverables
+DeliverablesService --> DeliverablesController: Return project deliverables
+DeliverablesController --> DeliverablesManagementInterface: Return project deliverables
+
+Lecturer -> DeliverablesManagementInterface: View deliverable details
+DeliverablesManagementInterface -> DeliverablesController: GET /api/deliverables/{deliverableId}
+DeliverablesController -> DeliverablesService: Fetch deliverable details
+DeliverablesService -> Database: Fetch deliverable details
+Database --> DeliverablesService: Return deliverable details
+DeliverablesService --> DeliverablesController: Return deliverable details
+DeliverablesController --> DeliverablesManagementInterface: Return deliverable details
+
+Lecturer -> DeliverablesManagementInterface: Remove deliverable
+DeliverablesManagementInterface -> DeliverablesController: DELETE /api/deliverables/{deliverableId}
+DeliverablesController -> DeliverablesService: Remove deliverable
+DeliverablesService -> Database: Delete deliverable
+Database --> DeliverablesService: Return deletion status
+
+alt Removal successful
+    DeliverablesService -> NotificationService: Notify student of removal
+    NotificationService -> StudentEmail: Send removal notification
+    NotificationService --> DeliverablesService: Return notification status
+else Removal failed
+    DeliverablesService --> DeliverablesController: Return error status
+end
+
+DeliverablesService --> DeliverablesController: Return removal status
+DeliverablesController --> DeliverablesManagementInterface: Return deliverables management status
+
+@enduml

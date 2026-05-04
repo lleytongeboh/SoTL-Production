@@ -1,0 +1,46 @@
+@startuml
+actor Lecturer
+boundary ProposalManagementInterface
+control ProposalController
+control ProposalService
+control NotificationService
+database Database
+
+== Proposal Management ==
+
+Lecturer -> ProposalManagementInterface: Request list of project proposals
+ProposalManagementInterface -> ProposalController: GET /api/proposals
+ProposalController -> ProposalService: Retrieve project proposals
+ProposalService -> Database: Fetch project proposals
+Database --> ProposalService: Return project proposals
+ProposalService --> ProposalController: Return project proposals
+ProposalController --> ProposalManagementInterface: Return project proposals
+
+Lecturer -> ProposalManagementInterface: View proposal details
+ProposalManagementInterface -> ProposalController: GET /api/proposals/{proposalId}
+ProposalController -> ProposalService: Fetch proposal details
+ProposalService -> Database: Fetch proposal details
+Database --> ProposalService: Return proposal details
+ProposalService --> ProposalController: Return proposal details
+ProposalController --> ProposalManagementInterface: Return proposal details
+
+Lecturer -> ProposalManagementInterface: Approve or reject proposal
+ProposalManagementInterface -> ProposalController: POST /api/proposals/{proposalId}/approve or reject
+ProposalController -> ProposalService: Approve/Reject proposal
+ProposalService -> Database: Update proposal status
+Database --> ProposalService: Return update status
+
+alt Approval successful
+    ProposalService -> NotificationService: Notify student of approval
+    NotificationService -> StudentEmail: Send approval notification
+    NotificationService --> ProposalService: Return notification status
+else Rejection
+    ProposalService -> NotificationService: Notify student of rejection
+    NotificationService -> StudentEmail: Send rejection notification
+    NotificationService --> ProposalService: Return notification status
+end
+
+ProposalService --> ProposalController: Return approval/rejection status
+ProposalController --> ProposalManagementInterface: Return proposal management status
+
+@enduml

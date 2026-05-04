@@ -1,0 +1,57 @@
+@startuml
+
+class Student {
+    +String id
+    +String name
+    +List<QuizResult> quizzesTaken
+}
+
+class QuizResult {
+    +String quizId
+    +int totalMarks
+}
+
+class Quiz {
+    +String id
+    +String title
+    +String description
+    +List<Question> questions
+}
+
+class Question {
+    +String id
+    +String type
+    +String questionText
+    +List<String> options
+    +String correctAnswer
+    +LikertScale scale
+}
+
+class LikertScale {
+    +int min
+    +int max
+    +List<String> labels
+}
+
+class Response {
+    +String id
+    +String studentId
+    +String quizId
+    +List<Answer> responses
+    +int totalMarks
+}
+
+class Answer {
+    +String questionId
+    +Object response
+    +int mark
+}
+
+Student "1" -- "0..*" QuizResult
+Quiz "1" -- "0..*" Question
+Question "0..1" -- "1" LikertScale : optional
+Response "1" -- "0..*" Answer
+Response "1" -- "1" Student
+Response "1" -- "1" Quiz
+
+@enduml

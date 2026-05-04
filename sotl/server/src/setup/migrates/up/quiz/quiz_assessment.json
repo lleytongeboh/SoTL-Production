@@ -1,0 +1,140 @@
+{
+    "type": 0,
+    "title": "Flutter Quiz Assessment",
+    "description": "Please manage your time wisely to answer the following questions. Your feedback is much appreciated. Thank you.",
+    "items": [
+        {
+            "type": 0,
+            "isQuestion": true,
+            "title": "What is Flutter primarily used for?",
+            "options": [
+                {
+                    "label": "A. Web development"
+                },
+                {
+                    "label": "B. Desktop application development"
+                },
+                {
+                    "label": "C. Mobile application development",
+                    "correctAnswer": true
+                },
+                {
+                    "label": "D. Game development"
+                }
+            ],
+            "answer": 2,
+            "rewards": {
+                "0": 10
+            },
+            "required": true
+        },
+        {
+            "type": 0,
+            "isQuestion": true,
+            "title": "Which programming language is used to develop Flutter apps?",
+            "options": [
+                {
+                    "label": "A. JavaScript",
+                    "value": 0
+                },
+                {
+                    "label": "B. Kotlin",
+                    "value": 1
+                },
+                {
+                    "label": "C. Dart",
+                    "value": 2,
+                    "correctAnswer": true
+                },
+                {
+                    "label": "D. Swift",
+                    "value": 3
+                }
+            ],
+            "answer": 2,
+            "rewards": {
+                "0": 10
+            },
+            "required": true
+        },
+        {
+            "type": 0,
+            "isQuestion": true,
+            "title": "What widget in Flutter is used to create scrollable lists?",
+            "options": [
+                {
+                    "label": "A. ListView",
+                    "correctAnswer": true
+                },
+                {
+                    "label": "B. GridView"
+                },
+                {
+                    "label": "C. Column"
+                },
+                {
+                    "label": "D. Stack"
+                }
+            ],
+            "answer": 0,
+            "rewards": {
+                "0": 10
+            },
+            "required": true
+        },
+        {
+            "type": 0,
+            "isQuestion": true,
+            "title": "Which state management approach is NOT commonly used in Flutter?",
+            "options": [
+                {
+                    "label": "A. Provider"
+                },
+                {
+                    "label": "B. Redux"
+                },
+                {
+                    "label": "C. BLoC (Business Logic Component)"
+                },
+                {
+                    "label": "D. Vuex",
+                    "correctAnswer": true
+                }
+            ],
+            "answer": 3,
+            "rewards": {
+                "0": 10
+            },
+            "required": true
+        },
+        {
+            "type": 0,
+            "isQuestion": true,
+            "title": "In Flutter, which widget allows you to layer widgets on top of each other?",
+            "options": [
+                {
+                    "label": "A. Row"
+                },
+                {
+                    "label": "B. Stack",
+                    "correctAnswer": true
+                },
+                {
+                    "label": "C. Container"
+                },
+                {
+                    "label": "D. Column"
+                }
+            ],
+            "answer": 1,
+            "rewards": {
+                "0": 10
+            },
+            "required": true
+        }
+    ],
+    "rewards": {
+        "0": true,
+        "1": false
+    }
+}

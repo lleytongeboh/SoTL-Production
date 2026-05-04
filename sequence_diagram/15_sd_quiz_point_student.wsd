@@ -1,0 +1,42 @@
+@startuml
+actor Student
+boundary QuizInterface
+control QuizController
+control QuizManagementService
+database Database
+boundary NotificationService
+
+Student -> QuizInterface: Access quizzes
+QuizInterface -> QuizController: Request list of available quizzes
+QuizController -> QuizManagementService: Fetch list of quizzes
+QuizManagementService -> Database: Retrieve quiz data
+Database --> QuizManagementService: Return quiz data
+QuizManagementService --> QuizController: Provide quiz data
+QuizController --> QuizInterface: Display quizzes with reward points
+
+Student -> QuizInterface: Select a quiz and start attempt
+QuizInterface -> QuizController: Request quiz questions
+QuizController -> QuizManagementService: Fetch quiz questions
+QuizManagementService -> Database: Retrieve questions
+Database --> QuizManagementService: Return questions
+QuizManagementService --> QuizController: Provide questions
+QuizController --> QuizInterface: Display questions
+
+Student -> QuizInterface: Submit quiz answers
+QuizInterface -> QuizController: Submit answers
+QuizController -> QuizManagementService: Process answers
+QuizManagementService -> Database: Store answers and calculate score
+Database --> QuizManagementService: Return calculation results
+QuizManagementService -> Database: Calculate and update reward points
+Database --> QuizManagementService: Update reward points
+
+QuizManagementService -> QuizController: Provide quiz results and reward points
+QuizController --> QuizInterface: Display quiz results and reward points
+
+QuizManagementService -> NotificationService: Notify student of reward points
+NotificationService -> Student: Send reward points notification
+
+QuizManagementService -> QuizController: Update student profile with reward points
+QuizController -> QuizInterface: Display updated student profile
+
+@enduml

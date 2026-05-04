@@ -1,0 +1,154 @@
+@startuml
+
+' Define classes
+class User {
+    + userID: String
+    + email: String
+    + password: String
+    + role: String
+    + login(): Boolean
+    + changePassword(newPassword: String): void
+}
+
+class Lecturer {
+    + registerStudent(email: String, matricNumber: String): void
+    + viewProjectGroups(): List<Group>
+    + approveProjectProposal(projectID: String, approved: Boolean): void
+    + viewProjectDeliverables(projectID: String): List<Deliverable>
+    + removeProjectDeliverable(deliverableID: String): void
+    + createQuiz(category: String, points: int): void
+    + editQuizQuestion(questionID: String, newText: String, newOptions: List<String>): void
+    + giveMarks(studentID: String, marks: int): void
+}
+
+class Student {
+    + takeQuiz(quizID: String): void
+    + attemptQuiz(quizID: String): void
+    + earnRewardPoints(points: int): void
+}
+
+class TeamLeader {
+    + createGroup(projectID: String): void
+    + registerProjectProposal(proposalID: String): void
+}
+
+class TeamMember {
+    + joinGroup(groupID: String): void
+    + createToDoList(): void
+    + assignTask(taskID: String, memberID: String): void
+}
+
+class Client {
+    + loginWithCredentials(link: String): void
+}
+
+class Project {
+    + projectID: String
+    + name: String
+    + description: String
+    + objectives: String
+    + deliverables: List<Deliverable>
+    + markingScheme: MarkingScheme
+}
+
+class Group {
+    + groupID: String
+    + projectID: String
+    + members: List<TeamMember>
+    + addMember(member: TeamMember): void
+    + removeMember(memberID: String): void
+}
+
+class Task {
+    + taskID: String
+    + description: String
+    + assignee: TeamMember
+    + status: String
+    + markAsComplete(): void
+}
+
+class Quiz {
+    + quizID: String
+    + category: String
+    + points: int
+    + questions: List<Question>
+    + addQuestion(question: Question): void
+    + editQuestion(questionID: String, newText: String, newOptions: List<String>): void
+}
+
+class Deliverable {
+    + deliverableID: String
+    + projectID: String
+    + description: String
+    + file: String
+}
+
+class Question {
+    + questionID: String
+    + text: String
+    + options: List<String>
+    + correctAnswer: String
+}
+
+class Marks {
+    + studentID: String
+    + projectID: String
+    + marks: int
+}
+
+class MarkingScheme {
+    + peerEvaluation: int
+    + individualAssessment: int
+    + projectDeliverables: int
+}
+
+class Forum {
+
+}
+
+class Chat {
+
+}
+
+class ToDoList {
+
+}
+
+' Define relationships
+User <|-- Lecturer
+User <|-- Student
+TeamMember <|-- TeamLeader
+Student <|-- TeamMember
+User <|-- Client
+
+Lecturer --o Group : manages
+Lecturer --o Project : manages
+Lecturer --o Quiz : creates
+Lecturer --o Deliverable : manages
+Lecturer --o Marks : assigns
+
+TeamLeader --o Group : creates
+TeamLeader --o Project : registers
+
+TeamMember --o Group : joins
+TeamMember --o Task : performs
+
+Project --o Group : contains
+Project --o Deliverable : includes
+Project --o Marks : has
+
+Group --o TeamMember : contains
+Group --o Task : manages
+
+Quiz --o Question : consists of
+Student --o Quiz : takes
+Student --o Deliverable : submits
+Student --o Marks : receives
+
+MarkingScheme --o Project : defines
+MarkingScheme --o Quiz : related to
+MarkingScheme --o Deliverable : related to
+
+
+
+@enduml

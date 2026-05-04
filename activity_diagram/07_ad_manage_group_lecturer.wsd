@@ -1,0 +1,70 @@
+@startuml
+|Lecturer|
+start
+:Request group list;
+
+|GroupManagementInterface|
+:Send request to GroupController;
+
+|GroupController|
+:Retrieve group information;
+
+|GroupService|
+:Fetch group details and member lists;
+
+|GroupService|
+:Return group information;
+
+|GroupController|
+:Return group information;
+
+|GroupManagementInterface|
+:Return group information;
+
+:Display group list;
+:View group details;
+
+|GroupController|
+:Fetch detailed group information;
+
+|GroupService|
+:Fetch detailed information;
+
+|GroupService|
+:Return detailed group information;
+
+|GroupController|
+:Return detailed group information;
+
+|GroupManagementInterface|
+:Return detailed group information;
+
+:Display group details;
+:Request to remove group member;
+
+|GroupMemberController|
+:Remove group member;
+
+|GroupMemberService|
+:Update group composition;
+
+|GroupMemberService|
+:Return removal status;
+
+|GroupMemberController|
+:Return removal status;
+
+|GroupManagementInterface|
+if (Removal successful?) then (yes)
+    :Notify removed member;
+    
+    |NotificationService|
+    :Send removal notification;
+    :Return notification status;
+else (no)
+    :Display error message;
+endif
+
+:Display group management status;
+stop
+@enduml

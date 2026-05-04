@@ -1,0 +1,70 @@
+@startuml
+|Lecturer|
+start
+:Request list of project proposals;
+
+|ProposalManagementInterface|
+:Display list of project proposals;
+
+|ProposalController|
+:Retrieve project proposals;
+
+|ProposalService|
+:Fetch project proposals from storage;
+
+|ProposalService|
+:Return list of project proposals;
+
+|ProposalManagementInterface|
+:Display project proposals to Lecturer;
+
+:View proposal details;
+
+|ProposalController|
+:Retrieve specific proposal details;
+
+|ProposalService|
+:Fetch proposal details from storage;
+
+|ProposalService|
+:Return detailed proposal information;
+
+|ProposalManagementInterface|
+:Display detailed proposal information;
+
+:Approve or reject proposal;
+
+|ProposalController|
+:Process approval or rejection of proposal;
+
+|ProposalService|
+:Update proposal status in storage;
+
+if (Approval successful?) then (yes)
+    :Notify student of approval;
+
+    |NotificationService|
+    :Send approval notification to student;
+
+    |NotificationService|
+    :Confirm notification sent;
+else (Rejection)
+    :Notify student of rejection;
+
+    |NotificationService|
+    :Send rejection notification to student;
+
+    |NotificationService|
+    :Confirm notification sent;
+endif
+
+|ProposalService|
+:Return approval/rejection status;
+
+|ProposalController|
+:Update proposal management status;
+
+|ProposalManagementInterface|
+:Display final proposal management status;
+stop
+@enduml

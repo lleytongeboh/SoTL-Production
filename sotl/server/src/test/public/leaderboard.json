@@ -1,0 +1,50 @@
+[
+    {
+        "_id": "673cace84db78634f09ce7c4",
+        "name": "Student 21",
+        "matric": "S10021",
+        "mark": "N/A",
+        "group": {
+            "name": "Group 4",
+            "batch": "24/25",
+            "project": {
+                "title": "Tabula desolo coadunatio nisi architecto clibanus cibus patrocinor beatae appello torqueo audax creber.",
+                "badges": [
+                    {
+                        "_id": "673cacf34db78634f09d4389",
+                        "name": "Badge 1",
+                        "description": "Badge 1 description",
+                        "color": "#FFD700",
+                        "order": 1,
+                        "batch": "24/25"
+                    },
+                    {
+                        "_id": "673cacf34db78634f09d438a",
+                        "name": "Badge 2",
+                        "description": "Badge 2 description",
+                        "color": "#BDBDBD",
+                        "order": 2,
+                        "batch": "24/25"
+                    },
+                    {
+                        "_id": "673cacf34db78634f09d438b",
+                        "name": "Badge 3",
+                        "description": "Badge 3 description",
+                        "color": "#B87333",
+                        "order": 3,
+                        "batch": "24/25"
+                    },
+                    {
+                        "_id": "673cacf34db78634f09d438c",
+                        "name": "Badge 4",
+                        "description": "Badge 4 description",
+                        "color": "#3BB842",
+                        "order": 4,
+                        "batch": "24/25"
+                    }
+                ],
+                "progress": "71.43"
+            }
+        }
+    }
+]

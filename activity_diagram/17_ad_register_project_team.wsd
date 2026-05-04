@@ -1,0 +1,44 @@
+@startuml
+|TeamLeader|
+start
+:Enter project details and upload documents;
+
+|ProjectRegistrationInterface|
+:Submit project proposal;
+
+|ProjectController|
+:Confirm successful registration;
+
+|ProjectRegistrationInterface|
+:Display pending status of proposal approving;
+
+|NotificationService|
+:Notify lecturer of new project proposal;
+
+|Lecturer|
+:Access project overview;
+
+|ProjectController|
+:Retrieve overall project details;
+
+|ProjectRegistrationInterface|
+:Display project overview;
+
+|Lecturer|
+:Review project proposal;
+:Approve/Reject project proposal;
+
+|ProjectController|
+:store project status;
+
+|NotificationService|
+:Send approval/rejection notification;
+
+|ProjectController|
+:Display project status;
+
+|ProjectRegistrationInterface|
+:Show project status;
+
+stop
+@enduml

@@ -1,0 +1,33 @@
+@startuml
+actor Lecturer
+boundary AddStudentEmailPage
+control AuthController
+control StudentService
+control EmailService
+database Database
+
+Lecturer -> AddStudentEmailPage: Enter student email and details
+Lecturer -> AddStudentEmailPage: Click "Add Student" button
+AddStudentEmailPage -> AuthController: POST /api/addStudent
+AuthController -> StudentService: Validate email format and details
+StudentService -> Database: Check for existing student records
+Database --> StudentService: Return existing records
+StudentService -> StudentService: Validate data
+alt Data is valid
+    StudentService -> StudentService: Generate auto-generated password
+    StudentService -> Database: Save student account with email, matric number, and password
+    Database --> StudentService: Return save status
+    alt Account creation succeeded
+        StudentService -> EmailService: Create email content
+        EmailService -> StudentEmail: Send email with password and instructions
+        StudentEmail --> EmailService: Return email status
+        EmailService --> StudentService: Return email status
+    else Account creation failed
+        StudentService -> AddStudentEmailPage: Display error message
+    end
+else Data is invalid
+    AddStudentEmailPage -> Lecturer: Display error message
+end
+
+AddStudentEmailPage -> Lecturer: Display addition status
+@enduml

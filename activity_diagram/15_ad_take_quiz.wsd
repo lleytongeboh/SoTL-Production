@@ -1,0 +1,53 @@
+@startuml
+|Student|
+start
+:Access quizzes;
+
+|QuizInterface|
+:Request available quizzes;
+
+|QuizController|
+:Fetch available quizzes;
+:Provide quiz data;
+
+|QuizInterface|
+:Display quizzes;
+
+|Student|
+:Select assessment type;
+
+|QuizInterface|
+:Request quiz questions;
+
+|QuizController|
+:Fetch self-assessment quiz questions;
+:Provide questions;
+
+|QuizController|
+:Display questions;
+
+|Student|
+:Submit assessment answers;
+
+|QuizInterface|
+:Submit answers;
+
+|QuizController|
+:Process answers;
+:Provide results;
+
+|QuizController|
+:Display feedback and score;
+
+|QuizController|
+:Show integration confirmation;
+
+
+|QuizController|
+:Notify student of quiz availability and results;
+
+|NotificationService|
+:Send notifications;
+
+stop
+@enduml

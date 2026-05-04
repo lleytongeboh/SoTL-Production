@@ -1,0 +1,43 @@
+@startuml
+|Student|
+start
+:Access quizzes;
+
+|QuizInterface|
+:Request list of available quizzes;
+
+|QuizController|
+:Fetch list of quizzes;
+
+|QuizInterface|
+:Display quizzes with reward points;
+
+|Student|
+:Select a quiz and start attempt;
+
+|QuizInterface|
+:Request quiz questions;
+
+|QuizController|
+:Fetch quiz questions;
+
+|QuizInterface|
+:Display questions;
+
+|Student|
+:Submit quiz answers;
+
+|QuizInterface|
+:Submit answers;
+
+|QuizController|
+:Process answers;
+
+|QuizController|
+:Provide quiz results and reward points;
+
+|QuizInterface|
+:Display quiz results and reward points;
+
+stop
+@enduml

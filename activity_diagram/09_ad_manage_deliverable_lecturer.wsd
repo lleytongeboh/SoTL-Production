@@ -1,0 +1,64 @@
+@startuml
+|Lecturer|
+start
+:Request list of project deliverables;
+
+|DeliverablesManagementInterface|
+:Display list of project deliverables;
+
+|DeliverablesController|
+:Retrieve project deliverables;
+
+|DeliverablesService|
+:Fetch project deliverables from storage;
+
+|DeliverablesService|
+:Return project deliverables;
+
+|DeliverablesManagementInterface|
+:Display project deliverables to Lecturer;
+
+:View deliverable details;
+
+|DeliverablesController|
+:Retrieve specific deliverable details;
+
+|DeliverablesService|
+:Fetch deliverable details from storage;
+
+|DeliverablesService|
+:Return deliverable details;
+
+|DeliverablesManagementInterface|
+:Display deliverable details to Lecturer;
+
+:Remove deliverable;
+
+|DeliverablesController|
+:Process removal of deliverable;
+
+|DeliverablesService|
+:Delete deliverable from storage;
+
+if (Removal successful?) then (yes)
+    :Notify student of removal;
+
+    |NotificationService|
+    :Send removal notification to student;
+
+    |NotificationService|
+    :Confirm notification sent;
+else (Removal failed)
+    :Return error status;
+endif
+
+|DeliverablesService|
+:Return removal status;
+
+|DeliverablesController|
+:Update deliverables management status;
+
+|DeliverablesManagementInterface|
+:Display final deliverables management status;
+stop
+@enduml

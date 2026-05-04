@@ -1,0 +1,59 @@
+@startuml
+|Lecturer|
+start
+:Access quiz creation interface;
+
+|QuizCreationPage|
+:Display fields for questions, answers, categories, and points;
+:Enter quiz details;
+:Click "Review Quiz" button;
+
+|QuizController|
+:Validate quiz data;
+
+if (Data is valid?) then (yes)
+    :Save quiz details with categories and points;
+
+    if (Quiz creation succeeded?) then (yes)
+        |QuizCreationPage|
+        :Display option to assign quiz or not;
+
+        if (Assign quiz?) then (yes)
+            :Select group or individual for assignment;
+            :Enter assignment details;
+
+            |QuizController|
+            :Assign quiz to group/individual;
+
+            |AssignmentService|
+            :Perform assignment;
+            :Return assignment status;
+
+            |QuizCreationPage|
+            :Display assignment success or failure;
+            :Confirm assignment;
+        else (no)
+            :Confirm quiz creation without assignment;
+        endif
+    else (no)
+        :Display error message;
+    endif
+else (no)
+    |QuizCreationPage|
+    :Display validation errors;
+endif
+
+|Lecturer|
+:View progress and results;
+
+|ProgressDashboard|
+:Retrieve quiz results and progress;
+
+|Database|
+:Return progress and results;
+
+|ProgressDashboard|
+:Display progress and results;
+
+stop
+@enduml

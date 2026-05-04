@@ -1,0 +1,56 @@
+@startuml
+|Client|
+start
+:Access fixed website link;
+
+|LoginInterface|
+:Prompt for account and password;
+
+|Client|
+:Enter account and password;
+
+|LoginInterface|
+:Submit account and password;
+
+|LoginController|
+:Validate account and password;
+:Check credentials validity;
+:Confirm valid credentials;
+
+|LoginController|
+:Confirm valid credentials;
+
+|LoginInterface|
+:Redirect to evaluation form;
+
+|EvaluationFormInterface|
+:Request form access;
+
+|EvaluationFormController|
+:Verify client authorization;
+:Confirm authorization;
+
+|EvaluationFormInterface|
+:Display evaluation form;
+
+|Client|
+:Fill in the evaluation form;
+
+|EvaluationFormInterface|
+:Submit form data;
+
+|EvaluationFormController|
+:Save evaluation form data;
+:Confirm data saved;
+
+|EvaluationFormInterface|
+:Display submission confirmation;
+
+|LoginController|
+:Show error if credentials are invalid (if needed);
+
+|LoginInterface|
+:Display error message;
+
+stop
+@enduml

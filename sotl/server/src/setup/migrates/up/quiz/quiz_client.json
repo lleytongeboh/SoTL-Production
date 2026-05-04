@@ -1,0 +1,257 @@
+{
+    "type": 2,
+    "title": "Client's Satisfactory Evaluation on Student's Software Project and Development Team / Penilaian Kepuasan Pelanggan untuk Projek Perisian dan Kumpulan Pelajar yang Membangunkan Sistem",
+    "description": "Please spare few minutes of your time to evaluate the project and software development team who have implemented a system / app for your company. The students are conducting this study as part of their undergraduate’s degree in the Faculty of Computer Science and Information Technology (FCSIT) at the Universiti Malaysia Sarawak (UNIMAS) under my supervision.<br/><br/>Your feedback is much appreciated. Thank you.<br/><br/>Kind Regards,<br/>Nurfauza Jali<br/>jnurfauza@unimas.my",
+    "items": [
+        {
+            "type": 1,
+            "isQuestion": true,
+            "title": "Creativity and Innovation of the Solutions (System) / Kreativiti dan Inovasi Penyelesaian (Sistem)",
+            "options": [
+                {
+                    "label": "Poor / Lemah"
+                },
+                {
+                    "label": "Fair / Sederhana"
+                },
+                {
+                    "label": "Good / Baik"
+                },
+                {
+                    "label": "Very Good / Sangat Baik"
+                },
+                {
+                    "label": "Excellent / Cemerlang"
+                }
+            ],
+            "likert_statements": [{"label": "Creativity and Innovation of the Solutions (System) / Kreativiti dan Inovasi Penyelesaian (Sistem)"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 1,
+            "isQuestion": true,
+            "title": "Progress and System Completeness / Kemajuan dan Kelengkapan Sistem",
+            "options": [
+                {
+                    "label": "Poor / Lemah"
+                },
+                {
+                    "label": "Fair / Sederhana"
+                },
+                {
+                    "label": "Good / Baik"
+                },
+                {
+                    "label": "Very Good / Sangat Baik"
+                },
+                {
+                    "label": "Excellent / Cemerlang"
+                }
+            ],
+            "likert_statements": [{"label": "Progress and System Completeness / Kemajuan dan Kelengkapan Sistem"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 1,
+            "isQuestion": true,
+            "title": "Quality of the System / Kualiti Sistem",
+            "options": [
+                {
+                    "label": "Poor / Lemah"
+                },
+                {
+                    "label": "Fair / Sederhana"
+                },
+                {
+                    "label": "Good / Baik"
+                },
+                {
+                    "label": "Very Good / Sangat Baik"
+                },
+                {
+                    "label": "Excellent / Cemerlang"
+                }
+            ],
+            "likert_statements": [{"label": "Quality of the System / Kualiti Sistem"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 1,
+            "isQuestion": true,
+            "title": "System Fulfils Needs of Client / Sistem Memenuhi Keperluan Pelanggan",
+            "options": [
+                {
+                    "label": "Poor / Lemah"
+                },
+                {
+                    "label": "Fair / Sederhana"
+                },
+                {
+                    "label": "Good / Baik"
+                },
+                {
+                    "label": "Very Good / Sangat Baik"
+                },
+                {
+                    "label": "Excellent / Cemerlang"
+                }
+            ],
+            "likert_statements": [{"label": "System Fulfils Needs of Client / Sistem Memenuhi Keperluan Pelanggan"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 1,
+            "isQuestion": true,
+            "title": "Responsibility / Tanggungjawab",
+            "options": [
+                {
+                    "label": "Poor / Lemah"
+                },
+                {
+                    "label": "Fair / Sederhana"
+                },
+                {
+                    "label": "Good / Baik"
+                },
+                {
+                    "label": "Very Good / Sangat Baik"
+                },
+                {
+                    "label": "Excellent / Cemerlang"
+                }
+            ],
+            "likert_statements": [{"label": "Responsibility / Tanggungjawab"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 1,
+            "isQuestion": true,
+            "title": "Interaction/Communication Between Team and Client (Owner)/ Interaksi/Komunikasi Antara Kumpulan dan Pelanggan (Pemilik)",
+            "options": [
+                {
+                    "label": "Poor / Lemah"
+                },
+                {
+                    "label": "Fair / Sederhana"
+                },
+                {
+                    "label": "Good / Baik"
+                },
+                {
+                    "label": "Very Good / Sangat Baik"
+                },
+                {
+                    "label": "Excellent / Cemerlang"
+                }
+            ],
+            "likert_statements": [{"label": "Interaction/Communication Between Team and Client (Owner)/ Interaksi/Komunikasi Antara Kumpulan dan Pelanggan (Pemilik)"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 1,
+            "isQuestion": true,
+            "title": "Development Process / Proses Pembangunan",
+            "options": [
+                {
+                    "label": "Poor / Lemah"
+                },
+                {
+                    "label": "Fair / Sederhana"
+                },
+                {
+                    "label": "Good / Baik"
+                },
+                {
+                    "label": "Very Good / Sangat Baik"
+                },
+                {
+                    "label": "Excellent / Cemerlang"
+                }
+            ],
+            "likert_statements": [{"label": "Development Process / Proses Pembangunan"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 1,
+            "isQuestion": true,
+            "title": "Overall Team Performance / Prestasi Kumpulan Secara Keseluruhan",
+            "options": [
+                {
+                    "label": "Poor / Lemah"
+                },
+                {
+                    "label": "Fair / Sederhana"
+                },
+                {
+                    "label": "Good / Baik"
+                },
+                {
+                    "label": "Very Good / Sangat Baik"
+                },
+                {
+                    "label": "Excellent / Cemerlang"
+                }
+            ],
+            "likert_statements": [{"label": "Overall Team Performance / Prestasi Kumpulan Secara Keseluruhan"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 2,
+            "isQuestion": true,
+            "title": "What are the greatest strengths of the system ? (Please provide supporting examples) / Apakah kekuatan terbesar sistem ini? (Sila berikan contoh yang menyokong kenyataan anda.)",
+            "op_answer": "Improve the efficiency of the company's operation by providing a system that can manage the company's data and information systematically. The system also provides a platform for the company to monitor the progress of the company's operation.",
+            "required": false,
+            "multiline": true,
+            "rewards": {
+            }
+        },
+        {
+            "type": 2,
+            "isQuestion": true,
+            "title": "What are the areas where the students need to make improvement? (Please provide example and suggestions for improvement) / Apakah bidang yang perlu diperbaiki oleh pelajar? (Sila berikan contoh dan saranan untuk penambahbaikan)",
+            "op_answer": "Make use of some industry collaboration tools that can keep track of the project",
+            "required": false,
+            "multiline": true,
+            "rewards": {
+            }
+        },
+        {
+            "type": 2,
+            "isQuestion": true,
+            "title": "Other Comments / Komen Tambahan: (if any / jika ada)",
+            "op_answer": "The students have done a great job in developing the system. The system has helped the company to improve its operation efficiency. Keep up the good work!",
+            "required": false,
+            "multiline": true,
+            "rewards": {
+            }
+        }
+    ],
+    "rewards": {
+        "0": false,
+        "1": true
+    }
+}

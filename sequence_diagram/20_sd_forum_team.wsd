@@ -1,0 +1,48 @@
+@startuml
+actor TeamMember
+
+boundary ForumInterface
+control ForumController
+control ForumService
+boundary NotificationService
+database Database
+
+TeamMember -> ForumInterface: Access forum page
+ForumInterface -> TeamMember: Display forum interface with options to post and comment
+
+TeamMember -> ForumInterface: Create a new post
+ForumInterface -> ForumController: Request to create post
+ForumController -> ForumService: Create post
+ForumService -> Database: Store post details
+Database --> ForumService: Confirm post creation
+ForumService --> ForumController: Confirm post creation
+ForumController --> ForumInterface: Display new post
+ForumInterface --> TeamMember: Show new post
+ForumService -> NotificationService: Notify team members of new post
+NotificationService -> TeamMember: Send notification of new post
+
+TeamMember -> ForumInterface: Comment on a post
+ForumInterface -> ForumController: Request to add comment
+ForumController -> ForumService: Add comment
+ForumService -> Database: Store comment details
+Database --> ForumService: Confirm comment creation
+ForumService --> ForumController: Confirm comment creation
+ForumController --> ForumInterface: Display new comment
+ForumInterface --> TeamMember: Show new comment
+ForumService -> NotificationService: Notify team members of new comment
+NotificationService -> TeamMember: Send notification of new comment
+
+TeamMember -> ForumInterface: Edit or delete post/comment
+ForumInterface -> ForumController: Request to edit/delete post/comment
+ForumController -> ForumService: Edit/delete post/comment
+ForumService -> Database: Update or remove post/comment
+Database --> ForumService: Confirm update/remove
+ForumService --> ForumController: Confirm update/remove
+ForumController --> ForumInterface: Display updated interface
+ForumInterface --> TeamMember: Show updated post/comment
+
+TeamMember -> ForumInterface: Search and filter posts
+ForumInterface -> ForumInterface: Perform search/filter
+ForumInterface --> TeamMember: Show search/filter results
+
+@enduml

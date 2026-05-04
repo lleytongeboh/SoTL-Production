@@ -1,0 +1,1 @@
+export type MongooseSelectOptions<T> = { [k in keyof Partial<T>]: 0 | 1 };

@@ -1,0 +1,28 @@
+@startuml
+actor TeamLeader
+boundary GroupCreationPage
+control GroupController
+control GroupService
+database Database
+
+TeamLeader -> GroupCreationPage: Enter group details (project name, description, objectives)
+GroupCreationPage -> GroupController: Submit group details
+
+GroupController -> GroupService: Request to create group with details
+GroupService -> GroupService: Validate group details
+GroupService -> Database: Save group details
+Database --> GroupService: Return save status
+
+alt Group creation successful
+    GroupService -> GroupController: Confirm group creation
+    GroupController --> GroupCreationPage: Display success message
+    GroupCreationPage -> TeamLeader: Show success message
+else Group creation failed
+    GroupService --> GroupController: Return error status
+    GroupController --> GroupCreationPage: Display error message
+    GroupCreationPage -> TeamLeader: Show error message
+end
+
+TeamLeader -> GroupCreationPage: View and manage group settings (if applicable)
+
+@enduml

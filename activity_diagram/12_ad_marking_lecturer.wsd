@@ -1,0 +1,47 @@
+@startuml
+|Lecturer|
+start
+:Input marks according to marking scheme;
+
+|MarkingPage|
+:Submit marks;
+
+|MarkingController|
+:Validate and process mark submission;
+
+|MarkingService|
+:Validate marks;
+
+if (Marks are valid?) then (yes)
+    :Save marks and update record;
+
+    if (Save succeeded?) then (yes)
+        |MarkingController|
+        :Confirm marks saved;
+
+        |MarkingPage|
+        :Notify success;
+        :Display success message;
+
+        |MarkingController|
+        :Notify student of marks;
+
+        |NotificationService|
+        :Send notification with marks;
+    else (no)
+        |MarkingController|
+        :Notify failure;
+
+        |MarkingPage|
+        :Display error message;
+    endif
+else (no)
+    |MarkingController|
+    :Return validation errors;
+
+    |MarkingPage|
+    :Display validation errors;
+endif
+
+stop
+@enduml

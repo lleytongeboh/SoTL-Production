@@ -1,0 +1,343 @@
+{
+    "type": 1,
+    "title": "Client's Satisfactory Evaluation on Student's Software Project and Development Team / Penilaian Kepuasan Pelanggan untuk Projek Perisian dan Kumpulan Pelajar yang Membangunkan Sistem",
+    "description": "Please spare few minutes of your time to evaluate the project and software development team who have implemented a system / app for your company. The students are conducting this study as part of their undergraduate’s degree in the Faculty of Computer Science and Information Technology (FCSIT) at the Universiti Malaysia Sarawak (UNIMAS) under my supervision.<br/><br/>Your feedback is much appreciated. Thank you.<br/><br/>Kind Regards,<br/>Nurfauza Jali<br/>jnurfauza@unimas.my",
+    "items": [
+        {
+            "type": 1,
+            "isQuestion": true,
+            "topic": "Quantity of Work",
+            "title": "Consider the degree to which the team member provides work that is accurate and complete.",
+            "options": [
+                {
+                    "label": "1 - Produces unacceptable work; fails to meet minimum group or project"
+                },
+                {
+                    "label": "2 - Occasionally produces work that meets minimum group or project requirement"
+                },
+                {
+                    "label": "3 -  Meets minimum group or project requirements"
+                },
+                {
+                    "label": "4 - Regularly produces work that meets minimum requirements and sometimes exceeds project or group requirements."
+                },
+                {
+                    "label": "5 - Produces work that consistently exceeds established group or project requirements Consider the degree to which the team member provides work that is accurate and complete."
+                }
+            ],
+            "likert_statements": [{"label": "Quantity of Work"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 1,
+            "isQuestion": true,
+            "topic": "Timeliness of Work",
+            "title": "Consider the team member's timeliness of work",
+            "options": [
+                {
+                    "label": "1 - Fail to meet deadlines set by group"
+                },
+                {
+                    "label": "2 - Occasionally misses deadlines set by group"
+                },
+                {
+                    "label": "3 -  Regularly meets deadlines set by group"
+                },
+                {
+                    "scale": 4,
+                    "label": "4 - Consistently meets deadlines set by group and occasionally competes work ahead of schedule."
+                },
+                {
+                    "scale": 5,
+                    "label": "5 - Consistently completes work ahead of schedule"
+                }
+            ],
+            "likert_statements": [{"label": "Timeliness of Work"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 1,
+            "isQuestion": true,
+            "topic": "Task Support",
+            "title": "Consider the amount of task support the team member gives to others",
+            "options": [
+                {
+                    "scale": 1,
+                    "label": "1 - Gives no task support to other members"
+                },
+                {
+                    "scale": 2,
+                    "label": "2 - Sometimes gives task support to other members"
+                },
+                {
+                    "scale": 3,
+                    "label": "3 -  Occasionally provides task support to other group members"
+                },
+                {
+                    "scale": 4,
+                    "label": "4 - Consistently provides task support to other group members"
+                },
+                {
+                    "scale": 5,
+                    "label": "5 - Consistently gives more task support than expected"
+                }
+            ],
+            "likert_statements": [{"label": "Task Support"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 1,
+            "isQuestion": true,
+            "topic": "Interaction",
+            "title": "Consider how the team member relates and communicates to others",
+            "options": [
+                {
+                    "scale": 1,
+                    "label": "1 - Behavior is detrimental/harmful to group"
+                },
+                {
+                    "scale": 2,
+                    "label": "2 - Behavior is inconsistent and occasionally distracts group meetings"
+                },
+                {
+                    "scale": 3,
+                    "label": "3 -  Regularly projects appropriate team behaviour including: listening to others and allowing his/her to be criticized."
+                },
+                {
+                    "scale": 4,
+                    "label": "4 - Consistently demonstrates appropriate team behavior"
+                },
+                {
+                    "scale": 5,
+                    "label": "5 - Consistently demonstrates exemplary team behavior"
+                }
+            ],
+            "likert_statements": [{"label": "Interaction"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 1,
+            "isQuestion": true,
+            "topic": "Attendance",
+            "title": "Consider the team member's attendance at the group/client meetings",
+            "options": [
+                {
+                    "scale": 1,
+                    "label": "1 - Failed to attend the group/client meetings"
+                },
+                {
+                    "scale": 2,
+                    "label": "2 - Attended 1% - 32% of the group/client meetings"
+                },
+                {
+                    "scale": 3,
+                    "label": "3 -  Attended 33% - 65% of the group/client meetings"
+                },
+                {
+                    "scale": 4,
+                    "label": "4 - Attended 66% - 99% of the group/client meetings"
+                },
+                {
+                    "scale": 5,
+                    "label": "5 - Attended 100% of the group/client meetings"
+                }
+            ],
+            "likert_statements": [{"label": "Attendance"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 1,
+            "isQuestion": true,
+            "topic": "Responsibility",
+            "title": "Consider the ability of the team member to carry out a chosen or assigned task & reliability to complete task.",
+            "options": [
+                {
+                    "scale": 1,
+                    "label": "1 - Is unwilling to carry out assigned tasks"
+                },
+                {
+                    "scale": 2,
+                    "label": "2 - Sometimes carries out assigned tasks but never volunteers to do a task"
+                },
+                {
+                    "scale": 3,
+                    "label": "3 -  Carries out assigned tasks but never volunteers to do a task"
+                },
+                {
+                    "scale": 4,
+                    "label": "4 - Consistently carries out assigned tasks and occasionally volunteers for other tasks"
+                },
+                {
+                    "scale": 5,
+                    "label": "5 - Consistently carries out assigned task and always volunteers for other tasks"
+                }
+            ],
+            "likert_statements": [{"label": "Responsibility"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 1,
+            "isQuestion": true,
+            "topic": "Involvement",
+            "title": "Consider the extend to which the student team member participates in the exchange of information",
+            "options": [
+                {
+                    "scale": 1,
+                    "label": "1 - Fails to participate in group discussions and fails to share relevant material"
+                },
+                {
+                    "scale": 2,
+                    "label": "2 - Sometimes participate in group discussion and rarely contributes relevant material for the project"
+                },
+                {
+                    "scale": 3,
+                    "label": "3 -  Take part in group discussions and shares relevant information"
+                },
+                {
+                    "scale": 4,
+                    "label": "4 - Regularly in group discussion and sometimes exceeds expectations"
+                },
+                {
+                    "scale": 5,
+                    "label": "5 - Consistently exceed group expectation and consistently contributes relevant material to projects"
+                }
+            ],
+            "likert_statements": [{"label": "Involvement"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 1,
+            "isQuestion": true,
+            "topic": "Leadership",
+            "title": "Consider how the team member engaged in leadership activities.",
+            "options": [
+                {
+                    "scale": 1,
+                    "label": "1 - Does not display leadership skills"
+                },
+                {
+                    "scale": 2,
+                    "label": "2 - Display minimal leadership skills in team"
+                },
+                {
+                    "scale": 3,
+                    "label": "3 -  Occasionally assumes leadership role"
+                },
+                {
+                    "scale": 4,
+                    "label": "4 - Regularly display good leadership skills"
+                },
+                {
+                    "scale": 5,
+                    "label": "5 - Consistently demonstrates exemplary leadership skills"
+                }
+            ],
+            "likert_statements": [{"label": "Leadership"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 1,
+            "isQuestion": true,
+            "topic": "Role assignment",
+            "title": "Consider how the team member establish their assigned roles (developer, designer, quality manager, tester etc..)",
+            "options": [
+                {
+                    "scale": 1,
+                    "label": "1 - Does not establish the skills on the assigned role"
+                },
+                {
+                    "scale": 2,
+                    "label": "2 - Display minimal assigned role skills in team"
+                },
+                {
+                    "scale": 3,
+                    "label": "3 -  Occasionally assumes assigned role"
+                },
+                {
+                    "scale": 4,
+                    "label": "4 - Regularly display good assigned skills"
+                },
+                {
+                    "scale": 5,
+                    "label": "5 - Consistently demonstrates exemplary assigned skills"
+                }
+            ],
+            "likert_statements": [{"label": "Role assignment"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 1,
+            "isQuestion": true,
+            "topic": "Overall Performance",
+            "title": "Consider the overall performance of the team member in the group",
+            "options": [
+                {
+                    "scale": 1,
+                    "label": "1 - Performance significantly fails to meet group requirements."
+                },
+                {
+                    "scale": 2,
+                    "label": "2 - Performance fails to meet some group requirements"
+                },
+                {
+                    "scale": 3,
+                    "label": "3 -  Performance meets all group requirements"
+                },
+                {
+                    "scale": 4,
+                    "label": "4 - Performance meets all group requirements consistently and sometimes exceeds"
+                },
+                {
+                    "scale": 5,
+                    "label": "5 - Performance consistently exceed all group requirements"
+                }
+            ],
+            "likert_statements": [{"label": "Overall Performance"}],
+            "required": true,
+            "rewards": {
+                "1": 5
+            }
+        },
+        {
+            "type": 2,
+            "isQuestion": true,
+            "title": "Other Comments (if any)",
+            "op_answer": 5,
+            "required": false,
+            "multiline": true,
+            "rewards": {
+            }
+        }
+    ],
+    "rewards": {
+        "0": false,
+        "1": true
+    }
+}

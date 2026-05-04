@@ -1,0 +1,13 @@
+@startuml
+left to right direction
+actor "Lecturer" as a1
+
+package "Manage Student" {
+  usecase "Add Student" as UC1
+  usecase "Remove Student" as UC2
+}
+
+a1 -- UC1
+a1 -- UC2
+
+@enduml

@@ -1,0 +1,33 @@
+@startuml
+
+class Project {
+    +String id
+    +String title
+    +List<Deliverable> deliverables
+}
+
+class Deliverable {
+    +String id
+    +String topic
+    +String description
+    +int overallMark
+    +double totalPercentage
+}
+
+class Student {
+    +String id
+    +String name
+    +List<Assessment> assessments
+}
+
+class Assessment {
+    +String deliverableId
+    +int score
+    +String feedback
+}
+
+Project "1" -- "0..*" Deliverable
+Student "1" -- "0..*" Assessment
+Deliverable "1" -- "0..*" Assessment
+
+@enduml

@@ -1,0 +1,49 @@
+@startuml
+|Lecturer|
+start
+:Access quiz editing interface;
+
+|EditQuizPage|
+:Request quiz details;
+
+|QuizController|
+:Fetch quiz details;
+
+|QuizService|
+:Retrieve quiz details;
+
+|QuizController|
+:Return quiz details;
+
+|EditQuizPage|
+:Provide quiz details for editing;
+
+|Lecturer|
+:Modify question text, options, categories, and points;
+
+|Lecturer|
+:Save or discard changes;
+
+if (Save changes?) then (yes)
+    |EditQuizPage|
+    :Confirm save;
+
+    |QuizController|
+    :Persist updated quiz details;
+
+    |QuizService|
+    :Save updated quiz details;
+
+    |QuizController|
+    :Confirm changes saved;
+
+    |EditQuizPage|
+    :Display changes saved confirmation;
+else (no)
+    |EditQuizPage|
+    :Discard edits and return to quiz list;
+endif
+
+|Lecturer|
+stop
+@enduml

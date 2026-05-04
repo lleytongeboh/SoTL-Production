@@ -1,0 +1,9 @@
+This project includes third-party open-source software:
+
+1. Sheet.js
+   - License: Apache License 2.0
+   - Copyright © 2012-present, SheetJS LLC
+
+2. react-data-table-component
+   - License: MIT License
+   - Copyright © 2018-present, Jose Betancur

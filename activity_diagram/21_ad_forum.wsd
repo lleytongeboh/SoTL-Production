@@ -1,0 +1,55 @@
+@startuml
+|TeamMember|
+start
+:Create a new post;
+
+|ForumInterface|
+:Request to create post;
+
+|ForumController|
+:Store post details;
+
+|NotificationService|
+:Send notification of new post to team members;
+
+|ForumInterface|
+:Show new post;
+
+|TeamMember|
+:Comment on a post;
+
+|ForumInterface|
+:Request to add comment;
+
+|ForumController|
+:Store comment details;
+
+|NotificationService|
+:Send notification of new comment to team members;
+
+|ForumInterface|
+:Show new comment;
+
+|TeamMember|
+:Edit or delete post/comment;
+
+|ForumInterface|
+:Request to edit/delete post/comment;
+
+|ForumController|
+:Update or remove post/comment;
+
+|ForumInterface|
+:Show updated post/comment;
+
+|TeamMember|
+:Search and filter posts;
+
+|ForumInterface|
+:Perform search/filter;
+
+|ForumInterface|
+:Show search/filter results;
+
+stop
+@enduml

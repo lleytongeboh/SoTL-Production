@@ -1,0 +1,51 @@
+@startuml
+actor TeamMember
+boundary DeliverableManagementInterface
+control DeliverableController
+control DeliverableService
+control BadgeService
+database Database
+boundary NotificationService
+
+TeamMember -> DeliverableManagementInterface: Access deliverable management page
+DeliverableManagementInterface -> DeliverableController: Request existing deliverables
+DeliverableController -> DeliverableService: Fetch existing deliverables
+DeliverableService -> Database: Retrieve deliverables
+Database --> DeliverableService: Return deliverables
+DeliverableService --> DeliverableController: Return deliverables
+DeliverableController --> DeliverableManagementInterface: Display existing deliverables
+DeliverableManagementInterface --> TeamMember: Show existing deliverables
+
+TeamMember -> DeliverableManagementInterface: Upload new deliverable
+DeliverableManagementInterface -> DeliverableController: Submit deliverable
+DeliverableController -> DeliverableService: Store deliverable
+DeliverableService -> Database: Store deliverable
+Database --> DeliverableService: Confirm storage
+DeliverableService --> DeliverableController: Confirm submission
+
+alt Assign Badge
+    DeliverableService -> BadgeService: Assign badge for submission
+    BadgeService -> Database: Update student record with badge
+    Database --> BadgeService: Confirm badge assignment
+    BadgeService --> DeliverableService: Confirm badge assignment
+end
+
+DeliverableController --> DeliverableManagementInterface: Confirm submission
+DeliverableManagementInterface --> TeamMember: Show submission confirmation
+
+DeliverableService -> NotificationService: Notify successful submission and badge assignment
+NotificationService -> TeamMember: Send notification of successful submission and badge earned
+
+TeamMember -> DeliverableManagementInterface: Remove deliverable
+DeliverableManagementInterface -> DeliverableController: Request removal
+DeliverableController -> DeliverableService: Delete deliverable
+DeliverableService -> Database: Delete deliverable
+Database --> DeliverableService: Confirm deletion
+DeliverableService --> DeliverableController: Confirm removal
+DeliverableController --> DeliverableManagementInterface: Confirm removal
+DeliverableManagementInterface --> TeamMember: Show removal confirmation
+
+DeliverableService -> NotificationService: Notify successful removal
+NotificationService -> TeamMember: Send notification
+
+@enduml

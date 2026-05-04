@@ -1,0 +1,41 @@
+@startuml
+left to right direction
+actor "Lecturer" as a1
+actor "Student" as a2
+actor "Team Leader" as a3
+actor "Team Member" as a4
+actor "Client" as a5
+
+rectangle SoTL {
+    usecase "Login" as UC1
+    usecase "Manage Student" as UC2
+    usecase "Manage Group" as UC3
+    usecase "Manage Project" as UC4
+    usecase "Manage Evaluation" as UC5
+    usecase "View Leaderboard" as UC6
+    usecase "Change Password" as UC7
+}
+a4 --|> a2
+a3 --|> a4
+
+UC1 <. UC7: <<extends>>
+
+a1 -- UC1
+a1 -- UC2
+a1 -- UC3
+a1 -- UC4
+a1 -- UC5
+a1 -- UC6
+
+UC1 -- a4
+UC3 -- a4
+UC4 -- a4
+UC5 -- a4
+UC6 -- a4
+
+UC3 -- a3
+UC4 -- a3
+
+a5 -- UC5
+
+@enduml

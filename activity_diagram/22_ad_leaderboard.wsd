@@ -1,0 +1,30 @@
+@startuml
+|Student|
+start
+:Access leaderboard page;
+
+|LeaderboardInterface|
+:Request leaderboard data;
+
+|LeaderboardController|
+:Fetch leaderboard data;
+
+|LeaderboardInterface|
+:Display leaderboard with points, badges, and marks;
+
+|Student|
+:Apply sorting (by points, badges, marks);
+:Apply filtering (by batch, group, individual);
+
+|LeaderboardInterface|
+:Display sorted and filtered leaderboard data;
+
+|LeaderboardController|
+:Check for updates;
+:Update leaderboard data;
+
+|LeaderboardInterface|
+:Display refreshed leaderboard;
+
+stop
+@enduml

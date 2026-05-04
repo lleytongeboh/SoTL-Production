@@ -1,0 +1,51 @@
+@startuml
+actor Lecturer
+boundary EditQuizPage
+control QuizController
+control QuizService
+database Database
+
+Lecturer -> EditQuizPage: Access quiz editing interface
+EditQuizPage -> QuizController: GET /api/quizzes/{quizId} to retrieve quiz details
+QuizController -> QuizService: Fetch quiz details
+QuizService -> Database: Retrieve quiz details
+Database --> QuizService: Return quiz details
+QuizService --> QuizController: Return quiz details
+QuizController --> EditQuizPage: Provide quiz details for editing
+
+Lecturer -> EditQuizPage: Modify question text, options, categories, and points
+EditQuizPage -> QuizController: POST /api/quizzes/{quizId}/update with updated question details
+QuizController -> QuizService: Validate and process update
+QuizService -> QuizService: Validate updated question data
+alt Data is valid
+    QuizService -> Database: Update quiz details
+    Database --> QuizService: Return update status
+    alt Update succeeded
+        QuizService --> QuizController: Confirm update success
+        QuizController --> EditQuizPage: Notify success
+        EditQuizPage -> Lecturer: Display success message
+    else Update failed
+        QuizService --> QuizController: Notify failure
+        QuizController --> EditQuizPage: Display error message
+        EditQuizPage -> Lecturer: Display error message
+    end
+else Data is invalid
+    QuizService --> QuizController: Return validation errors
+    QuizController --> EditQuizPage: Display validation errors
+    EditQuizPage -> Lecturer: Display validation errors
+end
+
+Lecturer -> EditQuizPage: Save or discard changes
+alt Save changes
+    EditQuizPage -> QuizController: Confirm save
+    QuizController -> QuizService: Persist updated quiz details
+    QuizService -> Database: Save updated quiz details
+    Database --> QuizService: Return save confirmation
+    QuizService --> QuizController: Confirm changes saved
+    QuizController --> EditQuizPage: Notify changes saved
+    EditQuizPage -> Lecturer: Display changes saved confirmation
+else Discard changes
+    EditQuizPage -> Lecturer: Discard edits and return to quiz list
+end
+
+@enduml

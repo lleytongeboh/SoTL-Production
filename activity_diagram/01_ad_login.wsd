@@ -1,0 +1,33 @@
+@startuml
+|User|
+start
+:Enter credentials;
+:Submit login form;
+
+|LoginPage|
+:Receive login request;
+:Send login data to AuthController;
+
+|AuthController|
+:Validate credentials;
+:Forward to AuthService;
+
+|AuthService|
+:Check user credentials in database;
+if (Credentials valid?) then (yes)
+    :Generate token;
+    :Return success message;
+else (no)
+    :Return error message;
+endif
+
+|LoginPage|
+if (Credentials valid?) then (yes)
+    :Redirect to dashboard;
+else (no)
+    :Show error message;
+endif
+
+end
+
+@enduml

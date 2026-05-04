@@ -1,0 +1,40 @@
+@startuml
+|Lecturer|
+start
+:Enter student email and details;
+:Click "Add Student" button;
+
+|AddStudentEmailPage|
+:Send request to AuthController;
+
+|AuthController|
+:Validate email format and details;
+
+|StudentService|
+:Check for existing student records;
+
+|StudentService|
+:Validate data;
+
+if (Data is valid?) then (yes)
+    :Generate auto-generated password;
+    :Save student account;
+
+    if (Account creation succeeded?) then (yes)
+        |EmailService|
+        :Create email content;
+        :Send email with password and instructions;
+        :Return email status;
+    else (no)
+        |AddStudentEmailPage|
+        :Display error message;
+    endif
+else (no)
+    |AddStudentEmailPage|
+    :Display error message;
+endif
+
+|AddStudentEmailPage|
+:Display addition status;
+stop
+@enduml

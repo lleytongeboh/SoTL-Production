@@ -1,0 +1,44 @@
+@startuml
+actor Lecturer
+boundary QuizCreationPage
+control QuizController
+database Database
+control AssignmentService
+boundary ProgressDashboard
+
+Lecturer -> QuizCreationPage: Access quiz creation interface
+QuizCreationPage -> Lecturer: Display fields for questions, answers, categories, and points
+Lecturer -> QuizCreationPage: Enter quiz details (questions, answers, categories, points)
+Lecturer -> QuizCreationPage: Click "Review Quiz" button
+QuizCreationPage -> QuizController: POST /api/createQuiz with quiz details
+QuizController -> QuizController: Validate quiz data
+alt Data is valid
+    QuizController -> Database: Save quiz details with categories and points
+    Database --> QuizController: Return save status
+    alt Quiz creation succeeded
+        QuizController -> QuizCreationPage: Display option to assign quiz or not
+        alt Assign quiz
+            QuizCreationPage -> Lecturer: Select group or individual for assignment
+            Lecturer -> QuizCreationPage: Enter assignment details
+            QuizCreationPage -> QuizController: POST /api/assignQuiz with selected group/individual
+            QuizController -> AssignmentService: Assign quiz to group/individual
+            AssignmentService -> AssignmentService: Perform assignment
+            AssignmentService --> QuizController: Return assignment status
+            QuizController -> QuizCreationPage: Display assignment success or failure
+            QuizCreationPage -> Lecturer: Confirm assignment
+        else No assignment
+            QuizCreationPage -> Lecturer: Confirm quiz creation without assignment
+        end
+    else Quiz creation failed
+        QuizController -> QuizCreationPage: Display error message
+    end
+else Data is invalid
+    QuizController -> QuizCreationPage: Display validation errors
+end
+
+Lecturer -> ProgressDashboard: View progress and results
+ProgressDashboard -> Database: Retrieve quiz results and progress
+Database --> ProgressDashboard: Return progress and results
+ProgressDashboard -> Lecturer: Display progress and results
+
+@enduml

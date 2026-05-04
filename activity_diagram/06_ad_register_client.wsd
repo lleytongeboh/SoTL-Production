@@ -1,0 +1,75 @@
+@startuml
+|Lecturer|
+start
+:Enter client details (name, email);
+
+|ClientAccountPage|
+:Submit client details for account creation;
+
+|AccountController|
+:Request account creation with client details;
+
+|AccountService|
+:Generate auto-generated password;
+:Save client account with encrypted password;
+
+if (Account creation successful?) then (yes)
+    |EmailService|
+    :Send login credentials to client;
+    
+    |NotificationService|
+    :Create email with login details and password;
+    :Send email with credentials and instructions;
+    :Return email status;
+
+    |EmailService|
+    :Return email sending status;
+
+    |AccountService|
+    :Confirm successful account creation;
+
+    |ClientAccountPage|
+    :Display success message;
+else (no)
+    |AccountService|
+    :Return error status;
+
+    |ClientAccountPage|
+    :Display error message;
+endif
+
+|Lecturer|
+:Request to resend login credentials;
+
+|ClientAccountPage|
+:Request resend of login credentials;
+
+|AccountController|
+:Regenerate new password and update account;
+
+|AccountService|
+:Generate new password;
+:Hash new password;
+:Update client account with new hashed password;
+
+|AccountService|
+:Return update status;
+
+|EmailService|
+:Send new login credentials to client;
+
+|NotificationService|
+:Create email with new login details and password;
+:Send email with new credentials and instructions;
+:Return email status;
+
+|EmailService|
+:Return email sending status;
+
+|AccountService|
+:Confirm resend of credentials;
+
+|ClientAccountPage|
+:Display resend confirmation;
+stop
+@enduml

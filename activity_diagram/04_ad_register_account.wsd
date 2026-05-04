@@ -1,0 +1,55 @@
+@startuml
+|Lecturer|
+start
+:Upload Excel file;
+
+|UploadPage|
+:Send file to FileHandleController;
+
+|FileHandleController|
+:Validate file format (Excel);
+if (File is valid?) then (yes)
+    :Save the file;
+    :Parse the Excel file;
+    :Extract and validate student data;
+
+    if (Data is valid?) then (yes)
+        |UploadPage|
+        :For each student;
+
+        |RegistrationController|
+        :Register student account;
+        :Generate auto-generated password;
+        :Save student account;
+
+        if (Account creation succeeded?) then (yes)
+            |EmailQueue|
+            :Add email task to queue;
+
+            |EmailWorker|
+            :Process email tasks;
+
+            |EmailService|
+            :Send email with auto-generated password;
+
+            |EmailQueue|
+            :Return email status;
+        else (no)
+            |UploadPage|
+            :Display error message;
+        endif
+
+        |UploadPage|
+        :Continue with next student;
+    else (no)
+        :Display error message;
+    endif
+
+    :Return extracted and validated data to UploadPage;
+else (no)
+    |UploadPage|
+    :Display error message;
+endif
+
+stop
+@enduml

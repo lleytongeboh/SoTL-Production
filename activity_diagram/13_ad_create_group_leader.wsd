@@ -1,0 +1,34 @@
+@startuml
+|TeamLeader|
+start
+:Enter group details (project name, description, objectives);
+
+|GroupCreationPage|
+:Submit group details;
+
+|GroupController|
+:Request to create group with details;
+
+|GroupService|
+:Validate group details;
+:Save group details;
+
+|GroupService|
+if (Group creation successful?) then (yes)
+    :Confirm group creation;
+    |GroupCreationPage|
+    :Display success message;
+    |TeamLeader|
+    :Show success message;
+else (no)
+    :Return error status;
+    |GroupCreationPage|
+    :Display error message;
+    |TeamLeader|
+    :Show error message;
+endif
+
+|TeamLeader|
+:View and manage group settings (if applicable);
+stop
+@enduml

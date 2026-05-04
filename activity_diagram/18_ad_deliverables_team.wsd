@@ -1,0 +1,52 @@
+@startuml
+|TeamMember|
+start
+:Access deliverable management page;
+
+|DeliverableManagementInterface|
+:Request existing deliverables;
+
+|DeliverableController|
+:Fetch existing deliverables;
+
+|DeliverableController|
+:Return deliverables;
+
+|DeliverableManagementInterface|
+:Display existing deliverables;
+
+|TeamMember|
+:Upload new deliverable;
+
+|DeliverableManagementInterface|
+:Submit deliverable;
+
+|DeliverableController|
+:Confirm submission;
+
+|DeliverableManagementInterface|
+:Show submission confirmation;
+
+|NotificationService|
+:Send notification of successful submission and badge earned;
+
+|TeamMember|
+:Remove deliverable;
+
+|DeliverableManagementInterface|
+:Request removal;
+
+|DeliverableController|
+:Delete deliverable;
+
+|DeliverableController|
+:Confirm removal;
+
+|DeliverableManagementInterface|
+:Show removal confirmation;
+
+|NotificationService|
+:Send notification;
+
+stop
+@enduml

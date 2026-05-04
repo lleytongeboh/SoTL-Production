@@ -1,0 +1,34 @@
+@startuml
+left to right direction
+actor "Lecturer" as a1
+actor "Student" as a2
+actor "Team Leader" as a3
+actor "Team Member" as a4
+
+package "Manage Project" {
+    usecase "Approve Project Registration" as UC1
+    usecase "Reject Project Registration" as UC2
+    usecase "Register Project" as UC3
+    usecase "Submit Deliverable" as UC4
+    usecase "View Deliverable" as UC5
+    usecase "Remove Deliverable" as UC6
+}
+
+a4 --|> a2
+a3 --|> a4
+
+a1 -- UC1
+a1 -- UC2
+a1 -- UC5
+a1 -- UC6
+
+UC1 .> UC3: <<extends>>
+UC2 .> UC3: <<extends>>
+
+UC4 -- a4
+UC5 -- a4
+UC6 -- a4
+
+UC3 -- a3
+
+@enduml

@@ -1,0 +1,19 @@
+@startuml
+actor User
+boundary LoginPage
+control AuthController
+control AuthService
+database Database
+entity Dashboard
+
+User -> LoginPage: Enter username/email and password
+User -> LoginPage: Click "Login" button
+LoginPage -> AuthController: POST /api/login
+AuthController -> AuthService: Validate credentials
+AuthService -> Database: Verify user credentials
+Database --> AuthService: Return user details and authentication status
+AuthService --> AuthController: Return authentication result and token
+AuthController --> LoginPage: Return authentication result and token
+LoginPage -> User: Display appropriate message and redirect to dashboard if successful
+User -> Dashboard: Access personalized dashboard
+@enduml

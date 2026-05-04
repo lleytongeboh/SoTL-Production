@@ -1,0 +1,49 @@
+@startuml
+actor TeamLeader
+actor Lecturer
+boundary ProjectRegistrationInterface
+control ProjectController
+control ProjectManagementService
+database Database
+boundary NotificationService
+
+TeamLeader -> ProjectRegistrationInterface: Access project proposal registration
+ProjectRegistrationInterface -> ProjectController: Request project proposal form
+ProjectController -> ProjectManagementService: Fetch proposal form
+ProjectManagementService -> Database: Retrieve form template
+Database --> ProjectManagementService: Return form template
+ProjectManagementService --> ProjectController: Return form template
+ProjectController --> ProjectRegistrationInterface: Display project proposal form
+ProjectRegistrationInterface --> TeamLeader: Show project proposal form
+
+TeamLeader -> ProjectRegistrationInterface: Enter project details and upload documents
+ProjectRegistrationInterface -> ProjectController: Submit project proposal
+ProjectController -> ProjectManagementService: Store project proposal
+ProjectManagementService -> Database: Store project details and documents
+Database --> ProjectManagementService: Confirm storage
+ProjectManagementService --> ProjectController: Confirm successful registration
+ProjectController --> ProjectRegistrationInterface: Confirm successful registration
+ProjectRegistrationInterface --> TeamLeader: Display confirmation and next steps
+
+ProjectManagementService -> NotificationService: Notify lecturer of new project proposal
+NotificationService -> Lecturer: Send proposal notification
+
+Lecturer -> ProjectController: Access project overview
+ProjectController -> ProjectManagementService: Retrieve overall project details
+ProjectManagementService -> Database: Fetch all project details
+Database --> ProjectManagementService: Return project details
+ProjectManagementService --> ProjectController: Return project details
+ProjectController --> ProjectRegistrationInterface: Display project overview
+ProjectRegistrationInterface --> Lecturer: Show project overview
+
+Lecturer -> ProjectManagementService: Review project proposal
+Lecturer -> ProjectManagementService: Approve/Reject project proposal
+ProjectManagementService -> Database: Update project status
+Database --> ProjectManagementService: Confirm status update
+ProjectManagementService -> NotificationService: Notify team leader of approval/rejection
+NotificationService -> TeamLeader: Send approval/rejection notification
+ProjectManagementService -> ProjectController: Confirm project status update
+ProjectController -> ProjectRegistrationInterface: Display project status
+ProjectRegistrationInterface --> TeamLeader: Show project status
+
+@enduml

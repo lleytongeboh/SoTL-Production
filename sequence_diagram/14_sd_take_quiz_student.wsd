@@ -1,0 +1,62 @@
+@startuml
+actor Student
+boundary QuizInterface
+control QuizController
+control QuizManagementService
+database Database
+boundary NotificationService
+
+Student -> QuizInterface: Access quizzes
+QuizInterface -> QuizController: Request available quizzes
+QuizController -> QuizManagementService: Fetch available quizzes
+QuizManagementService -> Database: Retrieve quiz data
+Database --> QuizManagementService: Return quiz data
+QuizManagementService --> QuizController: Provide quiz data
+QuizController --> QuizInterface: Display quizzes
+
+alt Self-Assessment Quiz
+    Student -> QuizInterface: Select self-assessment quiz
+    QuizInterface -> QuizController: Request self-assessment quiz questions
+    QuizController -> QuizManagementService: Fetch self-assessment quiz questions
+    QuizManagementService -> Database: Retrieve questions
+    Database --> QuizManagementService: Return questions
+    QuizManagementService --> QuizController: Provide questions
+    QuizController --> QuizInterface: Display questions
+    
+    Student -> QuizInterface: Submit self-assessment answers
+    QuizInterface -> QuizController: Submit answers
+    QuizController -> QuizManagementService: Process answers
+    QuizManagementService -> Database: Store answers and calculate score
+    Database --> QuizManagementService: Return calculation results
+    QuizManagementService --> QuizController: Provide results
+    QuizController --> QuizInterface: Display feedback and score
+    
+    QuizManagementService -> QuizManagementService: Update marking scheme
+    QuizManagementService --> QuizController: Confirm self-assessment results integrated
+    QuizController --> QuizInterface: Show integration confirmation
+else Peer-Assessment Quiz
+    Student -> QuizInterface: Select peer-assessment quiz
+    QuizInterface -> QuizController: Request peer-assessment quiz questions
+    QuizController -> QuizManagementService: Fetch peer-assessment quiz questions
+    QuizManagementService -> Database: Retrieve questions
+    Database --> QuizManagementService: Return questions
+    QuizManagementService --> QuizController: Provide questions
+    QuizController --> QuizInterface: Display questions
+    
+    Student -> QuizInterface: Submit peer-assessment answers
+    QuizInterface -> QuizController: Submit answers
+    QuizController -> QuizManagementService: Process answers
+    QuizManagementService -> Database: Store answers and calculate score
+    Database --> QuizManagementService: Return calculation results
+    QuizManagementService --> QuizController: Provide results
+    QuizController --> QuizInterface: Display feedback and score
+    
+    QuizManagementService -> QuizManagementService: Update marking scheme
+    QuizManagementService --> QuizController: Confirm peer-assessment results integrated
+    QuizController --> QuizInterface: Show integration confirmation
+end
+
+QuizManagementService -> NotificationService: Notify student of quiz availability and results
+NotificationService -> Student: Send notifications
+
+@enduml

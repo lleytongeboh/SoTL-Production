@@ -1,0 +1,50 @@
+@startuml
+|TeamMember|
+start
+:Access to-do list and task list page;
+:Display interface with options to add, edit, delete tasks;
+
+|ToDoListInterface|
+:Create new to-do list or task;
+:Request to create task;
+
+|TaskController|
+:Create task;
+
+|NotificationService|
+:Send notification of new task creation;
+
+|ToDoListInterface|
+:Display updated task list;
+
+|TeamMember|
+:Assign task to a team member;
+
+|TaskController|
+:Assign task to assignee;
+
+|NotificationService|
+:Send notification of new task assignment;
+
+|TeamMember|
+:Receive notification of new task assignment;
+:Update/Remove task;
+
+|ToDoListInterface|
+:Request of update/remove task from list;
+
+|TaskController|
+:Update/Remove task from database;
+
+|ToDoListInterface|
+:Display updated task list;
+
+|NotificationService|
+:Send reminders for upcoming deadlines and status changes;
+
+|TeamMember|
+:Receive reminder notifications;
+:Display task progress and updates;
+
+stop
+@enduml

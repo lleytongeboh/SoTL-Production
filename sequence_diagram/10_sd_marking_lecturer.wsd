@@ -1,0 +1,42 @@
+@startuml
+actor Lecturer
+boundary MarkingPage
+control MarkingController
+control MarkingService
+database Database
+boundary NotificationService
+
+Lecturer -> MarkingPage: Access marking interface
+MarkingPage -> MarkingController: GET /api/marking/{studentId or projectId} to retrieve marking form
+MarkingController -> MarkingService: Fetch marking form details
+MarkingService -> Database: Retrieve student/project and marking scheme details
+Database --> MarkingService: Return marking form details
+MarkingService --> MarkingController: Return marking form details
+MarkingController --> MarkingPage: Provide marking form for input
+
+Lecturer -> MarkingPage: Input marks according to marking scheme
+MarkingPage -> MarkingController: POST /api/marking/{studentId or projectId}/submit with marks and criteria
+MarkingController -> MarkingService: Validate and process mark submission
+MarkingService -> MarkingService: Validate marks and criteria
+alt Marks and criteria are valid
+    MarkingService -> Database: Save marks and update record
+    Database --> MarkingService: Return save status
+    alt Save succeeded
+        MarkingService --> MarkingController: Confirm marks saved
+        MarkingController --> MarkingPage: Notify success
+        MarkingPage -> Lecturer: Display success message
+        MarkingController -> NotificationService: Notify student of marks
+        NotificationService -> Student: Send notification with marks and criteria
+        NotificationService --> MarkingController: Return notification status
+    else Save failed
+        MarkingService --> MarkingController: Notify failure
+        MarkingController --> MarkingPage: Display error message
+        MarkingPage -> Lecturer: Display error message
+    end
+else Marks or criteria are invalid
+    MarkingService --> MarkingController: Return validation errors
+    MarkingController --> MarkingPage: Display validation errors
+    MarkingPage -> Lecturer: Display validation errors
+end
+
+@enduml

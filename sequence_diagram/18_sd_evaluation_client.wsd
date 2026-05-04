@@ -1,0 +1,35 @@
+@startuml
+actor Client
+boundary LoginInterface
+control LoginController
+control AuthenticationService
+boundary EvaluationFormInterface
+control EvaluationFormController
+database Database
+
+Client -> LoginInterface: Access fixed website link
+LoginInterface -> Client: Prompt for account and password
+Client -> LoginInterface: Enter account and password
+LoginInterface -> LoginController: Submit account and password
+LoginController -> AuthenticationService: Validate account and password
+AuthenticationService -> AuthenticationService: Check credentials validity
+AuthenticationService --> LoginController: Confirm valid credentials
+LoginController --> LoginInterface: Confirm valid credentials
+
+LoginInterface -> EvaluationForm: Redirect to evaluation form
+EvaluationForm -> EvaluationFormController: Request form access
+EvaluationFormController -> EvaluationFormController: Verify client authorization
+EvaluationFormController --> EvaluationForm: Confirm authorization
+EvaluationForm --> Client: Display evaluation form
+
+Client -> EvaluationForm: Fill in the evaluation form
+EvaluationForm -> EvaluationFormController: Submit form data
+EvaluationFormController -> Database: Save evaluation form data
+Database --> EvaluationFormController: Confirm data saved
+EvaluationFormController --> EvaluationForm: Confirm data saved
+EvaluationForm --> Client: Display submission confirmation
+
+LoginController -> LoginInterface: Show error if credentials are invalid (if needed)
+LoginInterface --> Client: Display error message
+
+@enduml

@@ -1,0 +1,37 @@
+@startuml
+actor Student
+boundary LeaderboardInterface
+control LeaderboardController
+control LeaderboardService
+database Database
+
+Student -> LeaderboardInterface: Access leaderboard page
+LeaderboardInterface -> LeaderboardController: Request leaderboard data
+
+LeaderboardController -> LeaderboardService: Fetch leaderboard data
+LeaderboardService -> Database: Retrieve points, badges, and marks for all students
+Database --> LeaderboardService: Return student data
+
+alt Sorting and Filtering
+    LeaderboardService -> LeaderboardService: Apply sorting (by points, badges, marks)
+    LeaderboardService -> LeaderboardService: Apply filtering (by batch, group, individual)
+end
+
+LeaderboardService --> LeaderboardController: Provide sorted and filtered leaderboard data
+LeaderboardController --> LeaderboardInterface: Display leaderboard with points, badges, and marks
+LeaderboardInterface --> Student: Show leaderboard
+
+alt Personal Performance
+    LeaderboardService -> LeaderboardService: Retrieve student's own performance
+    LeaderboardService --> LeaderboardController: Include personal performance
+    LeaderboardController --> LeaderboardInterface: Highlight personal achievements and comparison
+    LeaderboardInterface --> Student: Show personal achievements
+end
+
+alt Real-time Updates
+    LeaderboardService -> LeaderboardService: Check for updates
+    LeaderboardService --> LeaderboardController: Update leaderboard data
+    LeaderboardController --> LeaderboardInterface: Refresh leaderboard display
+end
+
+@enduml

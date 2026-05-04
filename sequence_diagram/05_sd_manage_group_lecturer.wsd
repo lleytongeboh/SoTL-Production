@@ -1,0 +1,45 @@
+@startuml
+actor Lecturer
+boundary GroupManagementInterface
+control GroupController
+control GroupService
+control GroupMemberController
+control GroupMemberService
+database Database
+boundary NotificationService
+
+Lecturer -> GroupManagementInterface: Request group list
+GroupManagementInterface -> GroupController: GET /api/groups
+GroupController -> GroupService: Retrieve group information
+GroupService -> Database: Fetch group details and member lists
+Database --> GroupService: Return group details and member lists
+GroupService --> GroupController: Return group information
+GroupController --> GroupManagementInterface: Return group information
+
+Lecturer -> GroupManagementInterface: View group details
+GroupManagementInterface -> GroupController: GET /api/groups/{groupId}
+GroupController -> GroupService: Fetch detailed group information
+GroupService -> Database: Fetch detailed information
+Database --> GroupService: Return detailed group information
+GroupService --> GroupController: Return detailed group information
+GroupController --> GroupManagementInterface: Return detailed group information
+
+Lecturer -> GroupManagementInterface: Request to remove group member
+GroupManagementInterface -> GroupMemberController: DELETE /api/groups/{groupId}/members/{memberId}
+GroupMemberController -> GroupMemberService: Remove group member
+GroupMemberService -> Database: Update group composition
+Database --> GroupMemberService: Return update status
+GroupMemberService --> GroupMemberController: Return removal status
+GroupMemberController --> GroupManagementInterface: Return removal status
+
+alt Removal successful
+    GroupManagementInterface -> NotificationService: Notify removed member
+    NotificationService -> GroupMember: Send removal notification
+    NotificationService --> GroupManagementInterface: Return notification status
+else Removal failed
+    GroupManagementInterface -> Lecturer: Display error message
+end
+
+GroupManagementInterface -> Lecturer: Display group management status
+
+@enduml
