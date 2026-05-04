@@ -1,22 +1,11 @@
 const fs = require("fs");
 const path = require("path");
 const mongoose = require("mongoose");
+const { EJSON } = require("bson");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const mongoUri = process.env.MONGO_URI || "mongodb://mongo:27017/sotl";
 const inDir = path.resolve(__dirname, "../db-export");
-
-function reviveMongoTypes(value) {
-  if (Array.isArray(value)) return value.map(reviveMongoTypes);
-  if (!value || typeof value !== "object") return value;
-
-  if (value.$oid) return new mongoose.Types.ObjectId(value.$oid);
-  if (value.$date) return new Date(value.$date);
-
-  return Object.fromEntries(
-    Object.entries(value).map(([key, entry]) => [key, reviveMongoTypes(entry)])
-  );
-}
 
 async function main() {
   const manifestPath = path.join(inDir, "manifest.json");
@@ -29,8 +18,9 @@ async function main() {
 
   for (const { name } of manifest) {
     const filePath = path.join(inDir, `${name}.json`);
-    const rawDocs = JSON.parse(fs.readFileSync(filePath, "utf8"));
-    const docs = rawDocs.map(reviveMongoTypes);
+    const docs = EJSON.parse(fs.readFileSync(filePath, "utf8"), {
+      relaxed: false,
+    });
     const collection = mongoose.connection.db.collection(name);
 
     await collection.deleteMany({});

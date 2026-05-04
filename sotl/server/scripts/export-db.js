@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const mongoose = require("mongoose");
+const { EJSON } = require("bson");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017/sotl";
@@ -19,7 +20,7 @@ async function main() {
     const docs = await mongoose.connection.db.collection(name).find({}).toArray();
     fs.writeFileSync(
       path.join(outDir, `${name}.json`),
-      JSON.stringify(docs, null, 2)
+      EJSON.stringify(docs, null, 2, { relaxed: false })
     );
     manifest.push({ name, count: docs.length });
     console.log(`${name}: ${docs.length}`);
