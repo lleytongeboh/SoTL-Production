@@ -922,8 +922,11 @@ Keep it concise for a chatbox interface.`;
         setActiveProjectId(p.id);
         setActiveProjectTitle(p.title);
 
-        // Default to Member if not found / token cannot be decoded.
-        const resolvedRole = await resolveRoleForProject(p.id, token);
+        const resolvedRole =
+          p.groupRole === 'Leader' || p.groupRole === 'Member'
+            ? p.groupRole
+            : await resolveRoleForProject(p.id, token);
+        setRole(resolvedRole);
 
         // Show different message based on role
         let selectionMsg = `Project selected: **${p.title}** ✔\n\n`;
@@ -935,7 +938,7 @@ Keep it concise for a chatbox interface.`;
             : 'No upcoming deliverables';
           
           selectionMsg += `**Deliverable:** ${nextDel}\n`;
-          selectionMsg += `Type \`team\` to see teams status`;
+          selectionMsg += `Type \`team\` to see team status`;
         } else {
           // For members, show deliverable and task info
           const nextDel = nextDeadline 

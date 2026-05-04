@@ -27,6 +27,9 @@ export type Deadline = {
 export type ProjectItem = {
   id: string;
   title: string;
+  groupId?: string;
+  groupName?: string;
+  groupRole?: Role;
 };
 
 export type ParsedCommand =
