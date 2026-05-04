@@ -16,7 +16,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Serve the application with Nginx
-FROM nginx:stable-alpine
+FROM nginx:stable-alpine AS production
 
 # Remove default Nginx website
 RUN rm -rf /usr/share/nginx/html/*

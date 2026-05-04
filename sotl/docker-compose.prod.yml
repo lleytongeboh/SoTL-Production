@@ -19,21 +19,19 @@ services:
       target: production
     ports:
       - "5000:5000"
+    env_file:
+      - ./server/.env
     environment:
       - BACKEND_PORT=5000
-    volumes:
-      - ./server:/app/src
-      - /app/src/node_modules
-    # restart: 
+    restart: always
     networks:
       - mern-app
     depends_on:
       - mongo
+      - redis
 
   mongo:
     image: mongo:latest
-    ports:
-      - "27017:27017"
     restart: always
     networks:
       - mern-app
@@ -42,8 +40,6 @@ services:
   
   redis:
     image: redis:latest
-    ports:
-      - "6379:6379"
     restart: always
     networks:
       - mern-app

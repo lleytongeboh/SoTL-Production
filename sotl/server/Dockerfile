@@ -9,10 +9,10 @@ RUN npm install
 
 COPY . .
 
-# RUN npm run build
+RUN npm run build
 
 # Production Stage
-FROM node AS production
+FROM node:23.0.0 AS production
 
 WORKDIR /app
 
