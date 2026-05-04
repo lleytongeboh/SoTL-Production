@@ -26,7 +26,14 @@ export async function attachGroupRole(req: AuthRequest, res: Response, next: Nex
 
     const uid = new mongoose.Types.ObjectId(uidStr);
 
-    const group = await (Group as any).findOne({ "team_members.student_id": uid }).lean();
+    const requestedProjectId = String(req.query.projectId || "");
+    const groupQuery: any = { "team_members.student_id": uid };
+
+    if (requestedProjectId && mongoose.isValidObjectId(requestedProjectId)) {
+      groupQuery.project = new mongoose.Types.ObjectId(requestedProjectId);
+    }
+
+    const group = await (Group as any).findOne(groupQuery).lean();
 
     // ✅ Ensure req.user exists (prevents runtime crash)
     req.user = req.user || {};
