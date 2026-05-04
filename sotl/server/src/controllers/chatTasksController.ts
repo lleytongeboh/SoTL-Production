@@ -399,6 +399,14 @@ export async function listMyProjectsForChat(req: AuthRequest, res: Response, nex
       groups.map((group: any) => [String(group.project), group])
     );
 
+    const taskCounts = await ChatTask.aggregate([
+      { $match: { projectId: { $in: projectIds } } },
+      { $group: { _id: "$projectId", count: { $sum: 1 } } },
+    ]);
+    const taskCountByProject = new Map(
+      taskCounts.map((row: any) => [String(row._id), row.count])
+    );
+
     const results = projectIds.map((pid: any) => {
       const p = projects.find((x: any) => String(x._id) === String(pid));
       const group = groupByProject.get(String(pid));
@@ -411,7 +419,15 @@ export async function listMyProjectsForChat(req: AuthRequest, res: Response, nex
         groupId: group?._id ? String(group._id) : undefined,
         groupName: group?.name,
         groupRole: member?.group_role,
+        taskCount: taskCountByProject.get(String(pid)) || 0,
       };
+    }).sort((a: any, b: any) => {
+      const roleRank = (role?: string) => role === "Leader" ? 0 : 1;
+      const byRole = roleRank(a.groupRole) - roleRank(b.groupRole);
+      if (byRole !== 0) return byRole;
+      const byTasks = (b.taskCount || 0) - (a.taskCount || 0);
+      if (byTasks !== 0) return byTasks;
+      return String(a.title).localeCompare(String(b.title));
     });
 
     return res.json({

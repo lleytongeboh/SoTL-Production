@@ -30,6 +30,7 @@ export type ProjectItem = {
   groupId?: string;
   groupName?: string;
   groupRole?: Role;
+  taskCount?: number;
 };
 
 export type ParsedCommand =

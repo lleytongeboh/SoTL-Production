@@ -310,9 +310,12 @@ export function useChatboxController() {
 
             // Resolve role for this project
             const userId = getUserIdFromJwt(token);
-            let resolvedRole: Role = 'Member';
+            let resolvedRole: Role =
+              proj.groupRole === 'Leader' || proj.groupRole === 'Member'
+                ? proj.groupRole
+                : 'Member';
 
-            if (userId) {
+            if (userId && !proj.groupRole) {
               try {
                 const membersRes = await fetchMembers(projectId, token);
                 const members = pickMembersArrayFromResponse(membersRes);
