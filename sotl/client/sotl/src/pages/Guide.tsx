@@ -108,14 +108,6 @@ const Guide: React.FC = () => {
             </List>
           </Box>
 
-          <Box>
-            <Typography variant='h6' fontWeight='bold' gutterBottom>
-              How To Hide This Page Later
-            </Typography>
-            <Typography>
-              Set <b>VITE_ENABLE_STUDENT_GUIDE=false</b> in the frontend environment before publishing.
-            </Typography>
-          </Box>
         </Box>
       }
     />
