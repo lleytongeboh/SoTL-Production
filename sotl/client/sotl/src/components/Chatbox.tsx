@@ -15,7 +15,7 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ReactMarkdown from 'react-markdown';
 
 import { useChatboxController } from '../hooks/useChatboxController';
-import { formatDueCompact, isOverdue, daysOverdue } from '../utils/date';
+import { formatDueChatbox, isOverdue, daysOverdue } from '../utils/date';
 
 /* ===================== Chatbox ===================== */
 
@@ -311,7 +311,7 @@ const Chatbox: React.FC = () => {
                               </Typography>
                               <Typography sx={{ fontSize: 12, color: '#666', mt: 0.3 }}>
                                 {t.status.replace(/_/g, ' ')}
-                                {t.dueAt ? ` • Due ${formatDueCompact(t.dueAt)}` : ''}
+                                {t.dueAt ? ` • Due ${formatDueChatbox(t.dueAt)}` : ''}
                               </Typography>
                             </Box>
                           );
@@ -369,7 +369,7 @@ const Chatbox: React.FC = () => {
                             </Typography>
                             <Typography sx={{ fontSize: 12, color: '#666', mt: 0.3 }}>
                               {t.status.replace(/_/g, ' ')}
-                              {t.dueAt ? ` • Due ${formatDueCompact(t.dueAt)}` : ''}
+                              {t.dueAt ? ` • Due ${formatDueChatbox(t.dueAt)}` : ''}
                             </Typography>
                           </Box>
                         ))}
@@ -433,7 +433,7 @@ const Chatbox: React.FC = () => {
                         </Box>
                         {t.dueAt && (
                           <Typography sx={{ fontSize: 13, color: taskOverdue ? '#d32f2f' : '#475569', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            📅 {formatDueCompact(t.dueAt)}
+                            📅 {formatDueChatbox(t.dueAt)}
                           </Typography>
                         )}
                       </Box>

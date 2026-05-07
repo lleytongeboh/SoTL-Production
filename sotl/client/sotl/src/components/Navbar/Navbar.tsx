@@ -24,6 +24,7 @@ interface NavBarProps {
 const Navbar: React.FC<NavBarProps> = ({ publicMode = false }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { role } = useAuth();
+  const showStudentGuide = import.meta.env.VITE_ENABLE_STUDENT_GUIDE !== 'false';
 
   const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
     if (
@@ -57,6 +58,13 @@ const Navbar: React.FC<NavBarProps> = ({ publicMode = false }) => {
         <ListItem component={Link} to={`leaderboard`}>
           <ListItemText primary="Leaderboard" />
         </ListItem>
+        {
+          role === 'student' && showStudentGuide && (
+            <ListItem component={Link} to="/student/guide">
+              <ListItemText primary="Guide" />
+            </ListItem>
+          )
+        }
       </List>
     </Box>
   );
@@ -97,6 +105,13 @@ const Navbar: React.FC<NavBarProps> = ({ publicMode = false }) => {
           <Link to={`leaderboard`} style={{ textDecoration: 'none', color: 'inherit' }}>
             <Typography variant="button">Leaderboard</Typography>
           </Link>
+          {
+            role === 'student' && showStudentGuide && (
+              <Link to="/student/guide" style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Typography variant="button">Guide</Typography>
+              </Link>
+            )
+          }
         </Box>}
 
         {/* Notification Icon and Avatar */}

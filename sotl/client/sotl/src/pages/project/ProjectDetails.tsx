@@ -1,30 +1,128 @@
-import { Avatar, Box, Button, Collapse, IconButton, LinearProgress, List, ListItemAvatar, ListItemButton, ListItemText, Tooltip } from '@mui/material';
+import { Avatar, Box, Button, Chip, Collapse, IconButton, LinearProgress, List, ListItemAvatar, ListItemButton, ListItemText, TableCell, TableRow, Tooltip } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useGroup } from '../../features/student/group/context/GroupContext';
 import { useProject } from '../../features/student/project/context/ProjectContext';
 import { Project } from '../../features/student/project/models';
 import { Group, TeamMember } from '../../features/student/group/models';
-import { Edit, ExpandLess, ExpandMore, WorkspacePremium } from '@mui/icons-material';
+import { DownloadOutlined, Edit, ExpandLess, ExpandMore, WorkspacePremium } from '@mui/icons-material';
 import ContentPanel from '../../components/ContentPanel';
 import { deliverablesHooks } from '../../features/lecturer/deliverables/hooks/deliverablesHooks';
 import { Deliverable } from '../../features/lecturer/deliverables/models';
 import { useGamificationHooks } from '../../features/lecturer/gamification/hooks/useGamificationHooks';
 import { Badge } from '../../features/lecturer/gamification/models';
 import { useFeedbackDialog, SET_LOADING_STATUS_FALSE } from '../../context/FeedbackDialog';
+import { projectHooks } from '../../features/student/project/hooks/projectHooks';
+import GeneralTable, { HeaderProperties } from '../../components/GeneralTable';
+import moment from 'moment';
+import { fetchTeamTasks } from '../../services/chatTasks.service';
+import { getJWToken } from '../../utils/getJWToken';
+
+type ChatTask = {
+  id: string;
+  title: string;
+  status: 'assigned' | 'in_progress' | 'done' | 'cancelled';
+  dueAt?: string;
+  evidenceLink?: string;
+  assignedTo?: {
+    name?: string;
+    matricNumber?: string;
+  } | null;
+};
 
 const ProjectDetails: React.FC = () => {
   const { selectedGroup }: { selectedGroup: Group | null } = useGroup();
   const { selectedProject }: { selectedProject: Project | null } = useProject();
   const { getBadgeList } = useGamificationHooks();
   const { getDeliverablesList, error, loading } = deliverablesHooks();
+  const { error: projectError, loading: projectLoading } = projectHooks();
 
   const [deliverablesList, setDeliverablesList] = useState<Deliverable[]>([]);
+  const [taskList, setTaskList] = useState<ChatTask[]>([]);
   const [errorPopup, setErrorPopup] = useState<boolean>(false);
   const [badgeList, setBadgeList] = useState<Badge[] | null>(null);
   const hasGroup: boolean = selectedGroup !== null;
   const hasProject: boolean = selectedProject !== null;
   const { setLoadingPane } = useFeedbackDialog();
+
+  const taskTableHeader: HeaderProperties[] = [
+    { name: 'Task', center: false },
+    { name: 'Member', center: false },
+    { name: 'Due Date', center: false },
+    { name: 'Status', center: false },
+    { name: 'PDF Attached', center: true },
+  ];
+
+  const taskStatusLabel = (task: ChatTask): string => {
+    if (task.status !== 'done' && task.dueAt && moment(task.dueAt).isBefore(moment(), 'day')) {
+      return 'Overdue';
+    }
+
+    switch (task.status) {
+      case 'assigned':
+        return 'Assigned';
+      case 'in_progress':
+        return 'In Progress';
+      case 'done':
+        return 'Done';
+      default:
+        return 'Unknown';
+    }
+  };
+
+  const taskStatusColor = (task: ChatTask): 'default' | 'primary' | 'success' | 'error' => {
+    if (task.status !== 'done' && task.dueAt && moment(task.dueAt).isBefore(moment(), 'day')) {
+      return 'error';
+    }
+
+    switch (task.status) {
+      case 'in_progress':
+        return 'primary';
+      case 'done':
+        return 'success';
+      default:
+        return 'default';
+    }
+  };
+
+  const getTaskProgress = (task: ChatTask): number => {
+    if (task.status === 'done') {
+      return 100;
+    }
+
+    if (task.status === 'in_progress') {
+      return 50;
+    }
+
+    return 0;
+  };
+
+  const getProjectProgress = (): number => {
+    const totalDeliverables: number = deliverablesList.length;
+    if (totalDeliverables === 0) {
+      return 0;
+    }
+
+    const completedDeliverables: number = deliverablesList.filter((deliverable) => selectedProject?.deliverables?.some(e => {
+      if (e.deliverable_id === deliverable._id) {
+        if (deliverable.approve) {
+          return e.status === 1;
+        }
+        return true;
+      }
+      return false;
+    })).length;
+    return completedDeliverables / totalDeliverables * 100;
+  };
+
+  const getTeamProgress = (): number => {
+    if (taskList.length === 0) {
+      return getProjectProgress();
+    }
+
+    const totalProgress = taskList.reduce((total, task) => total + getTaskProgress(task), 0);
+    return totalProgress / taskList.length;
+  };
 
   const withoutGroupContent = (): React.ReactNode => {
     return (
@@ -86,20 +184,6 @@ const ProjectDetails: React.FC = () => {
   }
 
   const projectDetails = (): React.ReactNode => {
-    const getProjectProgress = (): number => {
-      const totalDeliverables: number = deliverablesList.length;
-      const completedDeliverables: number = deliverablesList.filter((deliverable) => selectedProject?.deliverables?.some(e => {
-        if (e.deliverable_id === deliverable._id) {
-          if (deliverable.approve) {
-            return e.status === 1;
-          }
-          return true;
-        }
-        return false;
-      })).length;
-      return completedDeliverables / totalDeliverables * 100;
-    };
-
     const badges: Badge[] = (selectedProject?.badges ?? []).map((id) => badgeList?.find(e => e._id === id)!).sort((a, b) => a.order - b.order);
 
     return (
@@ -115,6 +199,53 @@ const ProjectDetails: React.FC = () => {
             <p>{getProjectProgress().toFixed(2)}%</p>
           </div>
           <LinearProgress sx={{ height: '15px', borderRadius: '8px' }} variant='determinate' value={getProjectProgress()} />
+        </div>
+        <div className='mb-8'>
+          <div className='flex justify-between title mb-4'>
+            <p>Team Progress</p>
+            <p>{getTeamProgress().toFixed(2)}%</p>
+          </div>
+          <LinearProgress sx={{ height: '15px', borderRadius: '8px' }} variant='determinate' value={getTeamProgress()} />
+        </div>
+        <div className='mb-8'>
+          <p className='title mb-4'>Project Name</p>
+          <p>{selectedProject?.title}</p>
+        </div>
+        <div className='mb-8'>
+          <p className='mb-4'><b>Team Tasks:</b></p>
+          <GeneralTable
+            tableHeader={taskTableHeader}
+            size='small'
+            tableBody={
+              taskList.length > 0 ?
+                taskList.map((task) => {
+                  const assignee = task.assignedTo?.name ?
+                    `${task.assignedTo.name}${task.assignedTo.matricNumber ? ` (${task.assignedTo.matricNumber})` : ''}` :
+                    'Unassigned';
+                  return (
+                    <TableRow key={task.id}>
+                      <TableCell>{task.title}</TableCell>
+                      <TableCell>{assignee}</TableCell>
+                      <TableCell>{task.dueAt ? moment(task.dueAt).format('DD/MM/YYYY') : 'N/A'}</TableCell>
+                      <TableCell><Chip size='small' label={taskStatusLabel(task)} color={taskStatusColor(task)} /></TableCell>
+                      <TableCell align='center'>
+                        {task.evidenceLink ?
+                          <Tooltip title='Open PDF / evidence'>
+                            <IconButton component='a' href={task.evidenceLink} target='_blank' rel='noreferrer'>
+                              <DownloadOutlined />
+                            </IconButton>
+                          </Tooltip> :
+                          '-'
+                        }
+                      </TableCell>
+                    </TableRow>
+                  );
+                }) :
+                <TableRow>
+                  <TableCell colSpan={taskTableHeader.length}>No tasks have been assigned yet.</TableCell>
+                </TableRow>
+            }
+          />
         </div>
         {badgeList && <div className='mb-8'>
           <div className='flex justify-between title mb-4'>
@@ -142,11 +273,15 @@ const ProjectDetails: React.FC = () => {
       if (selectedGroup) {
         const deliverables = await getDeliverablesList(selectedGroup!.batch);
         const badges = await getBadgeList();
+        const token = getJWToken();
+        const teamTasks = selectedProject?._id && token ? await fetchTeamTasks(selectedProject._id, token) : { results: [] };
         setBadgeList(badges.find(e => e.batch === selectedGroup!.batch)?.badges ?? []);
         setDeliverablesList(deliverables);
+        setTaskList(teamTasks.results ?? []);
       }
     } catch (error) {
       console.error(error);
+      setErrorPopup(true);
     } finally {
       setLoadingPane(SET_LOADING_STATUS_FALSE);
     }
@@ -154,19 +289,20 @@ const ProjectDetails: React.FC = () => {
 
   useEffect(() => {
     setBadgeList(null);
+    setTaskList([]);
     fetchData();
-  }, [selectedGroup]);
+  }, [selectedGroup, selectedProject]);
 
   return (
     <ContentPanel
       title='Project Details'
       removeTitleRow={true}
       loadingPopup={
-        { open: loading }
+        { open: loading || projectLoading }
       }
       errorPopup={{
         open: errorPopup,
-        content: error ?? 'An error occurred',
+        content: error ?? projectError ?? 'An error occurred',
         onClose: () => { setErrorPopup(false); }
       }}
       content={

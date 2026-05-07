@@ -76,6 +76,25 @@ export function formatDueCompact(iso?: string) {
     : d.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
+export function formatDueChatbox(iso?: string) {
+  if (!iso) return 'No deadline';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return String(iso);
+
+  const day = d.getDate();
+  const suffix = day % 10 === 1 && day % 100 !== 11
+    ? 'st'
+    : day % 10 === 2 && day % 100 !== 12
+      ? 'nd'
+      : day % 10 === 3 && day % 100 !== 13
+        ? 'rd'
+        : 'th';
+  const month = d.toLocaleDateString(undefined, { month: 'long' });
+  const year = d.getFullYear();
+
+  return `${day}${suffix} ${month} ${year}`;
+}
+
 // Matches inner handleSend() formatDue(iso: string)
 export function formatDueLocal(iso: string) {
   const d = new Date(iso);

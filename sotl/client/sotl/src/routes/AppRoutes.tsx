@@ -63,6 +63,7 @@ import AssessmentEdit from '../pages/evaluation/AssessmentEdit';
 import AssessmentList from '../features/student/quiz/pages/AssessmentList';
 import AssessmentQuiz from '../features/student/quiz/pages/AssessmentQuiz';
 import AssessmentResultManage from '../pages/evaluation/AssessmentResultManage';
+import Guide from '../pages/Guide';
 
 const AppRoutes = () => {
   const LazyMarkList = React.lazy(() => import('../pages/project/LecturerProjectMarkingList'));
@@ -109,6 +110,7 @@ const AppRoutes = () => {
                 <Route path=':assessmentIdParam/page/:pageNum' element={<AssessmentQuiz />} />
               </Route>
               <Route path="leaderboard" element={<LeaderBoard />} />
+              <Route path="guide" element={<Guide />} />
               <Route path='profile' element={<UserProfile />} />
               <Route path='student-profile/:studentId' element={<StudentViewProfile />} />
             </Route>

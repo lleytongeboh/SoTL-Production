@@ -7,7 +7,7 @@ import { useDeadlines } from './useDeadlines';
 import type { Deadline, Message, ProjectItem, Role, UiTask } from '../models/chatbox';
 import { parseChatCommand } from '../utils/chatParser';
 import { isValidHttpUrl } from '../utils/url';
-import { parseDueToISO, formatDueLocal, formatDuePretty, formatDueOrDash, isOverdue, daysOverdue } from '../utils/date';
+import { parseDueToISO, formatDueLocal, formatDuePretty, formatDueOrDash, formatDueChatbox, isOverdue, daysOverdue } from '../utils/date';
 
 import {
   fetchProjects,
@@ -478,7 +478,7 @@ export function useChatboxController() {
           pushSystem(
             `→ Assigned **${pendingAssignment.taskTitle}** to **${pendingAssignment.target.name}**` +
               (pendingAssignment.target.matricNumber ? ` (${pendingAssignment.target.matricNumber})` : '') +
-              (pendingAssignment.dueISO ? `\n📅 Due: ${new Date(pendingAssignment.dueISO).toLocaleDateString()}` : '')
+              (pendingAssignment.dueISO ? `\n📅 Due: ${formatDueChatbox(pendingAssignment.dueISO)}` : '')
           );
           setPendingAssignment(null);
           return;
@@ -500,7 +500,7 @@ export function useChatboxController() {
         pushSystem(
           `Assigned **${pendingAssignment.taskTitle}** to **${pendingAssignment.target.name}**` +
             (pendingAssignment.target.matricNumber ? ` (${pendingAssignment.target.matricNumber})` : '') +
-            (pendingAssignment.dueISO ? `\n📅 Due: ${new Date(pendingAssignment.dueISO).toLocaleDateString()}` : '') +
+            (pendingAssignment.dueISO ? `\n📅 Due: ${formatDueChatbox(pendingAssignment.dueISO)}` : '') +
             `\n📋 Description added.`
         );
         setPendingAssignment(null);
@@ -520,7 +520,7 @@ export function useChatboxController() {
 
 Task: ${selectedTask.title}
 Description: ${selectedTask.description || '(no description)'}
-Due: ${selectedTask.dueAt ? new Date(selectedTask.dueAt).toLocaleDateString() : 'No deadline'}
+Due: ${formatDueChatbox(selectedTask.dueAt)}
 
 Provide leadership guidance in 150-200 words MAX:
 1. Break task into 3-4 key subtasks (bullet points)
@@ -540,7 +540,7 @@ Keep it concise for a chatbox interface.`;
 
 Task: ${selectedTask.title}
 Description: ${selectedTask.description || '(no description)'}
-Due: ${selectedTask.dueAt ? new Date(selectedTask.dueAt).toLocaleDateString() : 'No deadline'}
+Due: ${formatDueChatbox(selectedTask.dueAt)}
 
 Provide step-by-step execution guidance in 100-150 words MAX:
 1. List 3-4 concrete steps to complete this task
@@ -848,7 +848,7 @@ Keep it concise for a chatbox interface.`;
                 }
                 contextPrompt += `\n  Status: ${task.status}`;
                 if (task.dueAt) {
-                  contextPrompt += `\n  Due: ${new Date(task.dueAt).toLocaleDateString()}`;
+                  contextPrompt += `\n  Due: ${formatDueChatbox(task.dueAt)}`;
                 }
               });
               contextPrompt += '\n\nWhen the student asks for help about a task, refer to the task details above and provide specific, actionable guidance.';
@@ -1387,7 +1387,7 @@ Keep it concise for a chatbox interface.`;
 
 Task: ${selectedTask.title}
 Description: ${selectedTask.description || '(no description)'}
-Due: ${selectedTask.dueAt ? new Date(selectedTask.dueAt).toLocaleDateString() : 'No deadline'}
+Due: ${formatDueChatbox(selectedTask.dueAt)}
 
 Provide leadership guidance in 150-200 words MAX:
 1. Break task into 3-4 key subtasks (bullet points)
@@ -1406,7 +1406,7 @@ Keep it concise for a chatbox interface.`;
 
 Task: ${selectedTask.title}
 Description: ${selectedTask.description || '(no description)'}
-Due: ${selectedTask.dueAt ? new Date(selectedTask.dueAt).toLocaleDateString() : 'No deadline'}
+Due: ${formatDueChatbox(selectedTask.dueAt)}
 
 Provide step-by-step execution guidance in 100-150 words MAX:
 1. List 3-4 concrete steps to complete this task
