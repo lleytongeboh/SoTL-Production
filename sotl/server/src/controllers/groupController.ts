@@ -200,7 +200,7 @@ const deleteGroup = async (req: AuthRequest, res: Response) => {
 const getGroup = async (req: AuthRequest, res: Response) => {
     const getMemberName = async (studentId: Types.ObjectId) => {
         const student = await Student.findById(studentId);
-        return student!.name;
+        return student?.name ?? "Unknown Student";
     };
 
     try {
