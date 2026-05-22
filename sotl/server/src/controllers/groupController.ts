@@ -39,6 +39,34 @@ export const checkGroup = async (req: AuthRequest, res: Response) => {
     }
 };
 
+// # Student
+export const getMyProjectGroups = async (req: AuthRequest, res: Response) => {
+    try {
+        const { batch } = req.params;
+        const groups = await Group.find({ batch: batch, team_members: { $elemMatch: { student_id: req.user!.userId } } });
+
+        const result = await Promise.all(groups.map(async (group) => {
+            const teamMembers = _.map(group.team_members, (member) => ({ "student_id": member.student_id.toString(), "group_role": member.group_role, "project_role": member.project_role }));
+            const users = await Student.find({ _id: { $in: _.map(group.team_members, 'student_id') } });
+            const pickedUsers = _.map(users, (user) => ({ "student_id": (user._id as any).toString(), "name": user.name, "email": user.email, "matric": user.matricNumber }));
+            const members = _.map(teamMembers, (member) => {
+                const user = _.find(pickedUsers, { student_id: member.student_id });
+                return { ...member, ...user };
+            });
+            const project = group.project ? await Project.findById(group.project) : null;
+
+            return {
+                group: { _id: group._id, name: group.name, description: group.description, team_members: members, project: group.project, batch: group.batch },
+                project: project ? _.omit(project.toObject(), ['mark_items']) : null,
+            };
+        }));
+
+        res.json(successResponse(result, "Project groups fetched successfully"));
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // # Student, Lecturer
 export const getGroupList = async (req: AuthRequest, res: Response) => {
     const transformTeamMemberData = async (student_ids: Types.ObjectId[], leaderId: Types.ObjectId) => {
@@ -520,6 +548,7 @@ const deleteSpecificMemberComment = async (comments: Types.ObjectId[], memberId:
 
 export default {
     checkGroup,
+    getMyProjectGroups,
     getGroupList,
     createGroup,
     joinGroup,

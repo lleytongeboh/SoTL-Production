@@ -7,6 +7,14 @@ import { ENCRYPTION_KEY } from '../config';
 import { API_BASE_URL } from '../../../configs/sotl-config';
 import { useAuth } from '../context';
 
+const getErrorMessage = (error: unknown, fallback: string) => {
+    if (axios.isAxiosError(error)) {
+        return error.response?.data?.message || error.message || fallback;
+    }
+
+    return error instanceof Error ? error.message : fallback;
+};
+
 export const useAuthServices = () => {
     const { login } = useAuth();
     const [token, setToken, removeToken] = useSessionStorage<string>('token', '');
@@ -26,8 +34,8 @@ export const useAuthServices = () => {
             }
             
             return response.data;
-        } catch (error: any) {
-            throw new Error(error.response.data?.message)
+        } catch (error) {
+            throw new Error(getErrorMessage(error, 'Unable to login. Please try again.'))
         }
     };
 

@@ -6,6 +6,7 @@ import forbiddenMiddleware, {DocumentCheckString} from "../middlewares/forbidden
 const GroupRouter = Router();
 
 GroupRouter.get('/check/:batch', authMiddleware(['student']), GroupController.checkGroup);
+GroupRouter.get('/my-projects/:batch', authMiddleware(['student']), GroupController.getMyProjectGroups);
 GroupRouter.get('/getList/:batch', authMiddleware(['student', 'lecturer']), GroupController.getGroupList);
 GroupRouter.post('/create', authMiddleware(['student']), GroupController.createGroup);
 GroupRouter.post('/join/:group_id', authMiddleware(['student']), GroupController.joinGroup);

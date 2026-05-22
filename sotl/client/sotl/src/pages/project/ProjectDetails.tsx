@@ -17,6 +17,7 @@ import GeneralTable, { HeaderProperties } from '../../components/GeneralTable';
 import moment from 'moment';
 import { fetchTeamTasks } from '../../services/chatTasks.service';
 import { getJWToken } from '../../utils/getJWToken';
+import { getMyProjectGroupsCall } from '../../features/student/group/services/checkGroup';
 
 type ChatTask = {
   id: string;
@@ -30,6 +31,12 @@ type ChatTask = {
   } | null;
 };
 
+type ProjectDetailsSection = {
+  group: Group;
+  project: Project;
+  tasks: ChatTask[];
+};
+
 const ProjectDetails: React.FC = () => {
   const { selectedGroup }: { selectedGroup: Group | null } = useGroup();
   const { selectedProject }: { selectedProject: Project | null } = useProject();
@@ -39,6 +46,7 @@ const ProjectDetails: React.FC = () => {
 
   const [deliverablesList, setDeliverablesList] = useState<Deliverable[]>([]);
   const [taskList, setTaskList] = useState<ChatTask[]>([]);
+  const [extraProjectSections, setExtraProjectSections] = useState<ProjectDetailsSection[]>([]);
   const [errorPopup, setErrorPopup] = useState<boolean>(false);
   const [badgeList, setBadgeList] = useState<Badge[] | null>(null);
   const hasGroup: boolean = selectedGroup !== null;
@@ -97,13 +105,13 @@ const ProjectDetails: React.FC = () => {
     return 0;
   };
 
-  const getProjectProgress = (): number => {
+  const getProjectProgress = (project = selectedProject): number => {
     const totalDeliverables: number = deliverablesList.length;
     if (totalDeliverables === 0) {
       return 0;
     }
 
-    const completedDeliverables: number = deliverablesList.filter((deliverable) => selectedProject?.deliverables?.some(e => {
+    const completedDeliverables: number = deliverablesList.filter((deliverable) => project?.deliverables?.some(e => {
       if (e.deliverable_id === deliverable._id) {
         if (deliverable.approve) {
           return e.status === 1;
@@ -115,13 +123,13 @@ const ProjectDetails: React.FC = () => {
     return completedDeliverables / totalDeliverables * 100;
   };
 
-  const getTeamProgress = (): number => {
-    if (taskList.length === 0) {
-      return getProjectProgress();
+  const getTeamProgress = (project = selectedProject, tasks = taskList): number => {
+    if (tasks.length === 0) {
+      return getProjectProgress(project);
     }
 
-    const totalProgress = taskList.reduce((total, task) => total + getTaskProgress(task), 0);
-    return totalProgress / taskList.length;
+    const totalProgress = tasks.reduce((total, task) => total + getTaskProgress(task), 0);
+    return totalProgress / tasks.length;
   };
 
   const withoutGroupContent = (): React.ReactNode => {
@@ -183,33 +191,45 @@ const ProjectDetails: React.FC = () => {
     );
   }
 
-  const projectDetails = (): React.ReactNode => {
-    const badges: Badge[] = (selectedProject?.badges ?? []).map((id) => badgeList?.find(e => e._id === id)!).sort((a, b) => a.order - b.order);
+  const projectDetails = (
+    project = selectedProject,
+    group = selectedGroup,
+    tasks = taskList,
+    isSelectedProject = true
+  ): React.ReactNode => {
+    const projectProgress = getProjectProgress(project);
+    const teamProgress = getTeamProgress(project, tasks);
+    const badges: Badge[] = (project?.badges ?? [])
+      .map((id) => badgeList?.find(e => e._id === id)!)
+      .filter(Boolean)
+      .sort((a, b) => a.order - b.order);
 
     return (
-      <Box textAlign={'left'}>
+      <Box textAlign={'left'} sx={isSelectedProject ? undefined : { borderTop: '1px solid #e0e0e0', mt: 6, pt: 6 }}>
         <div className='flex items-center justify-between mb-8'>
-          <p className="title">{selectedProject?.title}</p>
-          <IconButton component={Link} to='edit'><Edit fontSize='large' /></IconButton>
+          <p className="title">{project?.title}</p>
+          <IconButton component={Link} to='edit' state={isSelectedProject ? undefined : { project }}>
+            <Edit fontSize='large' />
+          </IconButton>
         </div>
-        <p className='mb-8'>{selectedProject?.description}</p>
+        <p className='mb-8'>{project?.description}</p>
         <div className='mb-8'>
           <div className='flex justify-between title mb-4'>
             <p>Project Progress</p>
-            <p>{getProjectProgress().toFixed(2)}%</p>
+            <p>{projectProgress.toFixed(2)}%</p>
           </div>
-          <LinearProgress sx={{ height: '15px', borderRadius: '8px' }} variant='determinate' value={getProjectProgress()} />
+          <LinearProgress sx={{ height: '15px', borderRadius: '8px' }} variant='determinate' value={projectProgress} />
         </div>
         <div className='mb-8'>
           <div className='flex justify-between title mb-4'>
             <p>Team Progress</p>
-            <p>{getTeamProgress().toFixed(2)}%</p>
+            <p>{teamProgress.toFixed(2)}%</p>
           </div>
-          <LinearProgress sx={{ height: '15px', borderRadius: '8px' }} variant='determinate' value={getTeamProgress()} />
+          <LinearProgress sx={{ height: '15px', borderRadius: '8px' }} variant='determinate' value={teamProgress} />
         </div>
         <div className='mb-8'>
           <p className='title mb-4'>Project Name</p>
-          <p>{selectedProject?.title}</p>
+          <p>{project?.title}</p>
         </div>
         <div className='mb-8'>
           <p className='mb-4'><b>Team Tasks:</b></p>
@@ -217,8 +237,8 @@ const ProjectDetails: React.FC = () => {
             tableHeader={taskTableHeader}
             size='small'
             tableBody={
-              taskList.length > 0 ?
-                taskList.map((task) => {
+              tasks.length > 0 ?
+                tasks.map((task) => {
                   const assignee = task.assignedTo?.name ?
                     `${task.assignedTo.name}${task.assignedTo.matricNumber ? ` (${task.assignedTo.matricNumber})` : ''}` :
                     'Unassigned';
@@ -250,7 +270,7 @@ const ProjectDetails: React.FC = () => {
         {badgeList && <div className='mb-8'>
           <div className='flex justify-between title mb-4'>
             <p>Milestone Badges</p>
-            <p>{selectedProject?.badges?.length ?? 0}/{badgeList.length} Received</p>
+            <p>{project?.badges?.length ?? 0}/{badgeList.length} Received</p>
           </div>
           <div className='flex gap-5'>{badges.map((badge, i) => (<Tooltip key={i} title={badge.name}><WorkspacePremium sx={{ fontSize: 60, color: badge.color }} /></Tooltip>))}</div>
         </div>
@@ -258,12 +278,17 @@ const ProjectDetails: React.FC = () => {
         <>
           <div className='flex justify-between title mb-4'>
             <p>Group Members</p>
-            <Button variant='text' component={Link} to='editRole'>Edit Role</Button>
+            <Button variant='text' component={Link} to='editRole' state={isSelectedProject ? undefined : { group }}>Edit Role</Button>
           </div>
           <List>
-            {selectedGroup?.team_members.map((member) => <GroupMemberRow key={member.student_id} member={member} />)}
+            {group?.team_members.map((member) => <GroupMemberRow key={member.student_id} member={member} />)}
           </List>
         </>
+        {isSelectedProject && extraProjectSections.map((section) => (
+          <React.Fragment key={section.project._id}>
+            {projectDetails(section.project, section.group, section.tasks, false)}
+          </React.Fragment>
+        ))}
       </Box>
     );
   };
@@ -275,9 +300,18 @@ const ProjectDetails: React.FC = () => {
         const badges = await getBadgeList();
         const token = getJWToken();
         const teamTasks = selectedProject?._id && token ? await fetchTeamTasks(selectedProject._id, token) : { results: [] };
+        const projectGroups = await getMyProjectGroupsCall(selectedGroup!.batch!);
+        const extraSections = await Promise.all(projectGroups
+          .filter((item): item is { group: Group; project: Project } => item.project !== null && item.project._id !== selectedProject?._id)
+          .map(async (item) => ({
+            group: item.group,
+            project: item.project,
+            tasks: item.project._id && token ? (await fetchTeamTasks(item.project._id, token)).results ?? [] : [],
+          })));
         setBadgeList(badges.find(e => e.batch === selectedGroup!.batch)?.badges ?? []);
         setDeliverablesList(deliverables);
         setTaskList(teamTasks.results ?? []);
+        setExtraProjectSections(extraSections);
       }
     } catch (error) {
       console.error(error);
@@ -290,6 +324,7 @@ const ProjectDetails: React.FC = () => {
   useEffect(() => {
     setBadgeList(null);
     setTaskList([]);
+    setExtraProjectSections([]);
     fetchData();
   }, [selectedGroup, selectedProject]);
 

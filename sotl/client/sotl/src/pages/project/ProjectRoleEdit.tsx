@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import ErrorPopup from "../../components/ErrorPopup";
 import SuccessPopup from "../../components/SuccessPopup";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useGroup } from "../../features/student/group/context/GroupContext";
 import { Group, TeamMember } from "../../features/student/group/models";
 import { groupHooks } from "../../features/student/group/hooks/groupHooks";
@@ -21,6 +21,8 @@ const ProjectRoleEdit: React.FC = () => {
 
     const { identity } = useAuth();
     const { selectedGroup, setSelectedGroup }: { selectedGroup: Group, setSelectedGroup: React.Dispatch<React.SetStateAction<Group | null>> } = useGroup();
+    const { state } = useLocation();
+    const groupToEdit: Group = (state as { group?: Group } | null)?.group ?? selectedGroup;
     const { editProjectRole, error: pErr }: { editProjectRole: (group_id: string, role: string[]) => Promise<Group>, error: string | null } = groupHooks();
 
     const navigate = useNavigate();
@@ -32,9 +34,9 @@ const ProjectRoleEdit: React.FC = () => {
 
     const onSave = async () => {
         try {
-            const response: Group = await editProjectRole(selectedGroup._id!, Array.from(roles!.entries()).filter((role) => role[1]).map((role) => role[0]));
+            const response: Group = await editProjectRole(groupToEdit._id!, Array.from(roles!.entries()).filter((role) => role[1]).map((role) => role[0]));
             if (response) {
-                const updatedTeamMember: TeamMember[] = _.mergeWith([...selectedGroup.team_members], response.team_members, (objValue: any, srcValue: any) => {
+                const updatedTeamMember: TeamMember[] = _.mergeWith([...groupToEdit.team_members], response.team_members, (objValue: any, srcValue: any) => {
                     return _.mergeWith(objValue, srcValue, (objValue: any, srcValue: any, key: string) => {
                         if (key === 'project_role') {
                             return srcValue;
@@ -42,7 +44,9 @@ const ProjectRoleEdit: React.FC = () => {
                         return objValue;
                     });
                 });
-                setSelectedGroup({ ...response, team_members: updatedTeamMember });
+                if (selectedGroup._id === response._id) {
+                    setSelectedGroup({ ...response, team_members: updatedTeamMember });
+                }
                 setSuccessPopup(true);
             }
         } catch (error) {
@@ -51,7 +55,7 @@ const ProjectRoleEdit: React.FC = () => {
     };
 
     useEffect(() => {
-        const member = selectedGroup.team_members.find((member) => member.student_id === identity?._id);
+        const member = groupToEdit.team_members.find((member) => member.student_id === identity?._id);
         const r = new Map(PROJECT_ROLES.map((role) => [role, member?.project_role?.find((r) => r === role) ? true : false]));
         setRoles(r);
     }, []);

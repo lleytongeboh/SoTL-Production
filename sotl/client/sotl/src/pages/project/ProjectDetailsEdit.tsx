@@ -5,7 +5,7 @@ import { Button, FormControl, TextField } from "@mui/material";
 import { useProject } from "../../features/student/project/context/ProjectContext";
 import { Project } from "../../features/student/project/models";
 import { projectHooks } from "../../features/student/project/hooks/projectHooks";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { PopupProps } from "../../components/SuccessPopup";
 import { LoadingPopupProps } from "../../components/LoadingPopup";
 import ConfirmationPopup from "../../components/ConfirmationPopup";
@@ -20,6 +20,8 @@ const ProjectDetailsEdit: React.FC = () => {
 
     const { editProject, error, loading } = projectHooks();
     const { selectedProject, setSelectedProject }: { selectedProject: Project, setSelectedProject: React.Dispatch<React.SetStateAction<Project | null>> } = useProject();
+    const { state } = useLocation();
+    const projectToEdit: Project = (state as { project?: Project } | null)?.project ?? selectedProject;
     const navigate = useNavigate();
 
     const errorPopupProps: PopupProps = {
@@ -46,9 +48,11 @@ const ProjectDetailsEdit: React.FC = () => {
 
     const onSave = async () => {
         try {
-            const response = await editProject(selectedProject._id!, { ...selectedProject, title, description });
+            const response = await editProject(projectToEdit._id!, { ...projectToEdit, title, description });
             if (response) {
-                setSelectedProject(response);
+                if (selectedProject._id === response._id) {
+                    setSelectedProject(response);
+                }
                 setSuccessPopup(true);
             }
         } catch (error) {
@@ -65,8 +69,8 @@ const ProjectDetailsEdit: React.FC = () => {
     };
 
     useEffect(() => {
-        setTitle(selectedProject.title);
-        setDescription(selectedProject.description);
+        setTitle(projectToEdit.title);
+        setDescription(projectToEdit.description);
     }, []);
 
     useEffect(() => {
