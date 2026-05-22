@@ -198,10 +198,11 @@ export function useChatboxController() {
         const taskLines = items.length > 0
           ? items.map((tt: any) => {
               const due = formatDueOrDash(tt.dueAt || tt.dueDate);
+              const icon = isOverdue(tt.dueAt || tt.dueDate, tt.status) ? '⚠️' : '📝';
               const assigneeInfo = resolvedRole === 'Leader' && tt.assignedTo
                 ? ` - ${tt.assignedTo.name || 'Unknown'}${tt.assignedTo.matricNumber ? ` (${tt.assignedTo.matricNumber})` : ''}`
                 : '';
-              return `  ${tt.title}${assigneeInfo} • ${due}`;
+              return `  ${icon} ${tt.title}${assigneeInfo} • ${due}`;
             }).join('\n')
           : '  No active tasks';
 
@@ -479,18 +480,19 @@ export function useChatboxController() {
                     const status = formatStatus(tt.status);
                     const due = formatDueOrDash(tt.dueAt || tt.dueDate);
                     const taskOverdue = isOverdue(tt.dueAt || tt.dueDate, tt.status);
+                    const statusIcon = taskOverdue ? '⚠️' : status;
                     
                     // For leaders, include assignee info
                     if (resolvedRole === 'Leader' && tt.assignedTo) {
                       const assignee = tt.assignedTo.name || 'Unknown';
                       const matric = tt.assignedTo.matricNumber || '';
                       const assigneeInfo = matric ? `${assignee} (${matric})` : assignee;
-                      return `  ${status} ${tt.title} - ${assigneeInfo} • ${due}`;
+                      return `  ${statusIcon} ${tt.title} - ${assigneeInfo} • ${due}`;
                     }
                     
                     // For members, show task with overdue warning
-                    const overdueWarning = taskOverdue ? ' ⚠️ OVERDUE' : '';
-                    return `  ${status} ${tt.title} • ${due}${overdueWarning}`;
+                    const overdueWarning = taskOverdue ? ' OVERDUE' : '';
+                    return `  ${statusIcon} ${tt.title} • ${due}${overdueWarning}`;
                   })
                   .join('\n')
               : '  No active tasks';
