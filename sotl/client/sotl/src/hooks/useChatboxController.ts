@@ -88,6 +88,24 @@ export function useChatboxController() {
   const pushSystem = (t: string) => setMessages((p) => [...p, { sender: 'system', text: t }]);
   const pushUser = (t: string) => setMessages((p) => [...p, { sender: 'user', text: t }]);
 
+  const replaceProjectsSummary = (summary: string) => {
+    setMessages((prev) => {
+      const summaryIndex = prev.findIndex((m: any) =>
+        m.sender === 'system' &&
+        typeof m.text === 'string' &&
+        m.text.includes('Your Projects')
+      );
+
+      if (summaryIndex === -1) {
+        return [...prev, { sender: 'system', text: summary }];
+      }
+
+      return prev.map((m, index) => (
+        index === summaryIndex ? { sender: 'system', text: summary } : m
+      ));
+    });
+  };
+
   const getUserIdFromJwt = (jwt?: string | null): string | null => {
     if (!jwt) return null;
     const parts = jwt.split('.');
@@ -118,6 +136,93 @@ export function useChatboxController() {
       if (typeof nested === 'string') return nested;
     }
     return null;
+  };
+
+  const buildProjectsSummary = async () => {
+    if (!token) return null;
+
+    const projectsRes = await fetchProjects(token);
+    const allProjects = projectsRes.results || [];
+    if (!allProjects.length) return 'Type `projects` to begin.';
+
+    const alerts: string[] = [];
+
+    for (const proj of allProjects) {
+      try {
+        const projectId = proj.id;
+        const projectTitle = proj.title;
+        const userId = getUserIdFromJwt(token);
+        let resolvedRole: Role =
+          proj.groupRole === 'Leader' || proj.groupRole === 'Member'
+            ? proj.groupRole
+            : 'Member';
+
+        if (userId && !proj.groupRole) {
+          try {
+            const membersRes = await fetchMembers(projectId, token);
+            const members = pickMembersArrayFromResponse(membersRes);
+            const normalizedMe = String(userId).toLowerCase();
+            const mine = members.find((m: any) => {
+              const sid =
+                extractObjectId(m?.student_id) ??
+                extractObjectId(m?.studentId) ??
+                extractObjectId(m?.id);
+              return sid ? String(sid).toLowerCase() === normalizedMe : false;
+            });
+            resolvedRole =
+              mine?.group_role === 'Leader' || mine?.group_role === 'Member'
+                ? (mine.group_role as Role)
+                : 'Member';
+          } catch {
+            resolvedRole = 'Member';
+          }
+        }
+
+        const tasksRes =
+          resolvedRole === 'Leader'
+            ? await fetchTeamTasks(projectId, token)
+            : await fetchMyTasks(projectId, token);
+
+        let items = tasksRes.results || [];
+        items = items
+          .filter((t: any) => t.status !== 'done' && t.status !== 'cancelled')
+          .sort((a: any, b: any) => {
+            const dateA = a.dueAt || a.dueDate;
+            const dateB = b.dueAt || b.dueDate;
+            if (!dateA && !dateB) return 0;
+            if (!dateA) return 1;
+            if (!dateB) return -1;
+            return new Date(dateA).getTime() - new Date(dateB).getTime();
+          });
+
+        const taskLines = items.length > 0
+          ? items.map((tt: any) => {
+              const due = formatDueOrDash(tt.dueAt || tt.dueDate);
+              const assigneeInfo = resolvedRole === 'Leader' && tt.assignedTo
+                ? ` - ${tt.assignedTo.name || 'Unknown'}${tt.assignedTo.matricNumber ? ` (${tt.assignedTo.matricNumber})` : ''}`
+                : '';
+              return `  ${tt.title}${assigneeInfo} • ${due}`;
+            }).join('\n')
+          : '  No active tasks';
+
+        const taskLabel = resolvedRole === 'Leader' ? '**📋 Team Tasks:**' : '**📋 Tasks:**';
+        alerts.push(`**(${alerts.length + 1}) ${projectTitle}**\n\n${taskLabel}\n${taskLines}`);
+      } catch {
+        // Keep the remaining project summaries usable.
+      }
+    }
+
+    if (!alerts.length) return 'Type `projects` to begin.';
+    return '**📚 Your Projects**\n\n' + alerts.join('\n\n---\n\n') + '\n\n💡 Type `projects` to begin.';
+  };
+
+  const refreshProjectsSummary = async () => {
+    try {
+      const summary = await buildProjectsSummary();
+      if (summary) replaceProjectsSummary(summary);
+    } catch {
+      // Summary refresh should never block the task workflow.
+    }
   };
 
   const pickMembersArrayFromResponse = (res: any): any[] => {
@@ -359,8 +464,7 @@ export function useChatboxController() {
                 if (!dateA) return 1;
                 if (!dateB) return -1;
                 return new Date(dateA).getTime() - new Date(dateB).getTime();
-              })
-              .slice(0, 3);
+              });
 
             const formatStatus = (status: string) => {
               const lower = String(status || '').toLowerCase();
@@ -475,6 +579,7 @@ export function useChatboxController() {
           if (pendingAssignment.dueISO) body.dueAt = pendingAssignment.dueISO;
           
           await createChatTask(activeProjectId, token, body);
+          await refreshProjectsSummary();
           pushSystem(
             `→ Assigned **${pendingAssignment.taskTitle}** to **${pendingAssignment.target.name}**` +
               (pendingAssignment.target.matricNumber ? ` (${pendingAssignment.target.matricNumber})` : '') +
@@ -497,6 +602,7 @@ export function useChatboxController() {
         if (pendingAssignment.dueISO) body.dueAt = pendingAssignment.dueISO;
         
         await createChatTask(activeProjectId, token, body);
+        await refreshProjectsSummary();
         pushSystem(
           `Assigned **${pendingAssignment.taskTitle}** to **${pendingAssignment.target.name}**` +
             (pendingAssignment.target.matricNumber ? ` (${pendingAssignment.target.matricNumber})` : '') +
@@ -1216,6 +1322,7 @@ Keep it concise for a chatbox interface.`;
 
       if (parsed.cmd.kind === 'PROGRESS') {
         await markTaskInProgress(activeProjectId, token, parsed.cmd.taskId);
+        await refreshProjectsSummary();
         pushSystem('🟡 Task marked in progress.');
         return;
       }
@@ -1231,6 +1338,7 @@ Keep it concise for a chatbox interface.`;
         }
 
         await markTaskDone(activeProjectId, token, parsed.cmd.taskId, parsed.cmd.evidenceLink.trim());
+        await refreshProjectsSummary();
         pushSystem('✔Task marked done.');
         return;
       }
@@ -1268,6 +1376,7 @@ Keep it concise for a chatbox interface.`;
 
       if (parsed.cmd.kind === 'UNDO') {
         await undoTask(activeProjectId, token, parsed.cmd.taskId);
+        await refreshProjectsSummary();
         pushSystem('Task is cancelled.');
         return;
       }
@@ -1297,6 +1406,7 @@ Keep it concise for a chatbox interface.`;
     if (!token) return;
     try {
       await undoTask(activeProjectId, token, t.id);
+      await refreshProjectsSummary();
       setMessages((p) => [...p, { sender: 'system', text: `Cancelled: **${t.title}**` }]);
     } catch (err: any) {
       pushSystem(`${err?.message || 'Failed to cancel task'}`);
@@ -1328,6 +1438,7 @@ Keep it concise for a chatbox interface.`;
 
       // 2) mark done with evidenceLink url
       await markTaskDone(activeProjectId, token as string, t.id, url);
+      await refreshProjectsSummary();
 
       setPendingFile(null);
       setSelectedTask(null);
@@ -1353,6 +1464,7 @@ Keep it concise for a chatbox interface.`;
     if (selectedTask.status === 'assigned') {
       try {
         await markTaskInProgress(activeProjectId, token, selectedTask.id);
+        await refreshProjectsSummary();
         pushUser('progress');
         pushSystem(`🟡 **${selectedTask.title}** marked as in progress!`);
         setSelectedTask(null);

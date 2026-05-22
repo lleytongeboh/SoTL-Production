@@ -52,6 +52,7 @@ const ProjectDetails: React.FC = () => {
   const hasGroup: boolean = selectedGroup !== null;
   const hasProject: boolean = selectedProject !== null;
   const { setLoadingPane } = useFeedbackDialog();
+  const fetchRequestId = React.useRef(0);
 
   const taskTableHeader: HeaderProperties[] = [
     { name: 'Task', center: false },
@@ -293,9 +294,9 @@ const ProjectDetails: React.FC = () => {
     );
   };
 
-  const fetchData = async () => {
+  const fetchData = async (requestId: number) => {
     try {
-      if (selectedGroup) {
+      if (selectedGroup && selectedProject) {
         const deliverables = await getDeliverablesList(selectedGroup!.batch);
         const badges = await getBadgeList();
         const token = getJWToken();
@@ -308,6 +309,9 @@ const ProjectDetails: React.FC = () => {
             project: item.project,
             tasks: item.project._id && token ? (await fetchTeamTasks(item.project._id, token)).results ?? [] : [],
           })));
+        if (requestId !== fetchRequestId.current) {
+          return;
+        }
         setBadgeList(badges.find(e => e.batch === selectedGroup!.batch)?.badges ?? []);
         setDeliverablesList(deliverables);
         setTaskList(teamTasks.results ?? []);
@@ -322,10 +326,15 @@ const ProjectDetails: React.FC = () => {
   };
 
   useEffect(() => {
+    if (!selectedGroup || !selectedProject) {
+      return;
+    }
+    const requestId = fetchRequestId.current + 1;
+    fetchRequestId.current = requestId;
     setBadgeList(null);
     setTaskList([]);
     setExtraProjectSections([]);
-    fetchData();
+    fetchData(requestId);
   }, [selectedGroup, selectedProject]);
 
   return (
