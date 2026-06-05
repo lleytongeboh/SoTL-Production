@@ -7,6 +7,32 @@ import  Project  from "../models/Project";
 import Group from "../models/Group";
 import User from "../models/User";
 
+function getBaseUrl(req: AuthRequest): string {
+  return `${req.protocol}://${req.get("host")}`;
+}
+
+function getPublicEvidenceLink(req: AuthRequest, evidenceLink?: string | null): string {
+  const raw = String(evidenceLink || "").trim();
+  if (!raw) return "";
+
+  const baseUrl = getBaseUrl(req);
+
+  if (raw.startsWith("/uploads/")) {
+    return `${baseUrl}${raw}`;
+  }
+
+  try {
+    const url = new URL(raw);
+    if (url.pathname.startsWith("/uploads/")) {
+      return `${baseUrl}${url.pathname}${url.search}`;
+    }
+  } catch {
+    return raw;
+  }
+
+  return raw;
+}
+
 /**
  * LEADER: View all tasks they assigned in the selected project
  * GET /api/chat-tasks/team?projectId=...
@@ -33,8 +59,6 @@ export async function getTeamTasks(req: AuthRequest, res: Response, next: NextFu
       .select("title status dueAt evidenceLink description assignedTo createdAt updatedAt completedAt")
       .lean();
 
-    const baseUrl = `${req.protocol}://${req.get("host")}`;
-
     return res.json({
       projectId,
       count: tasks.length,
@@ -56,11 +80,7 @@ export async function getTeamTasks(req: AuthRequest, res: Response, next: NextFu
             }
           : null,
         // ✅ make evidence downloadable
-        evidenceLink: t.evidenceLink
-          ? (String(t.evidenceLink).startsWith("http")
-              ? t.evidenceLink
-              : `${baseUrl}${t.evidenceLink}`)
-          : "",
+        evidenceLink: getPublicEvidenceLink(req, t.evidenceLink),
       })),
     });
   } catch (err) {
@@ -107,7 +127,7 @@ export async function getMyTasks(req: AuthRequest, res: Response, next: NextFunc
           }
         : null,
       hasEvidence: Boolean(t.evidenceLink && String(t.evidenceLink).trim().length > 0),
-      evidenceLink: t.evidenceLink || "",
+      evidenceLink: getPublicEvidenceLink(req, t.evidenceLink),
     }));
 
     return res.json({

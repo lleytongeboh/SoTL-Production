@@ -133,6 +133,16 @@ const ProjectDetails: React.FC = () => {
     return totalProgress / tasks.length;
   };
 
+  const getEvidenceDownloadUrl = (link?: string): string => {
+    if (!link) return '';
+
+    try {
+      return new URL(link, window.location.origin).toString();
+    } catch {
+      return link;
+    }
+  };
+
   const withoutGroupContent = (): React.ReactNode => {
     return (
       <React.Fragment>
@@ -252,7 +262,7 @@ const ProjectDetails: React.FC = () => {
                       <TableCell align='center'>
                         {task.evidenceLink ?
                           <Tooltip title='Open PDF / evidence'>
-                            <IconButton component='a' href={task.evidenceLink} target='_blank' rel='noreferrer'>
+                            <IconButton component='a' href={getEvidenceDownloadUrl(task.evidenceLink)} target='_blank' rel='noreferrer'>
                               <DownloadOutlined />
                             </IconButton>
                           </Tooltip> :
