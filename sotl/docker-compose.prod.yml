@@ -29,6 +29,8 @@ services:
     depends_on:
       - mongo
       - redis
+    volumes:
+      - ./uploads:/app/uploads
 
   mongo:
     image: mongo:latest

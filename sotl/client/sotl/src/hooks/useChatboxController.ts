@@ -22,8 +22,23 @@ import {
 
 import { uploadEvidenceFile } from '../services/uploads.service';
 
+const CHATBOX_MESSAGES_KEY = 'chatboxMessages';
+const CHATBOX_MESSAGES_LIMIT = 100;
+
+const readStoredMessages = (): Message[] => {
+  try {
+    const raw = sessionStorage.getItem(CHATBOX_MESSAGES_KEY);
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
 export function useChatboxController() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(readStoredMessages);
   const [input, setInput] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<UiTask | null>(null);
@@ -40,15 +55,24 @@ export function useChatboxController() {
 
   const token = useAuthToken();
   const alertedThisOpenRef = useRef(false);
+  const messagesRef = useRef<Message[]>(messages);
 
 
   // TEMP role (keep as you had)
   const [role, setRole] = useState<Role>('Member');
 
-  // Reset the "sent once per open" guard on close and when project/role changes
   useEffect(() => {
-    if (!isOpen) alertedThisOpenRef.current = false;
-  }, [isOpen]);
+    messagesRef.current = messages;
+
+    try {
+      sessionStorage.setItem(
+        CHATBOX_MESSAGES_KEY,
+        JSON.stringify(messages.slice(-CHATBOX_MESSAGES_LIMIT))
+      );
+    } catch {
+      // Chat history is helpful, but it should never block the assistant.
+    }
+  }, [messages]);
 
   // project selection persisted
   const [activeProjectId, setActiveProjectId] = useState<string>(
@@ -57,11 +81,6 @@ export function useChatboxController() {
   const [activeProjectTitle, setActiveProjectTitle] = useState<string>(
     localStorage.getItem('activeProjectTitle') || ''
   );
-
-  useEffect(() => {
-    // Reset alerts when project changes (role may change during open due to async resolution).
-    alertedThisOpenRef.current = false;
-  }, [activeProjectId]);
 
   const [projects, setProjects] = useState<ProjectItem[]>([]);
 
@@ -268,6 +287,12 @@ export function useChatboxController() {
     }
   };
 
+  useEffect(() => {
+    if (!token || !activeProjectId) return;
+    resolveRoleForProject(activeProjectId, token);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, activeProjectId]);
+
   /* ---------- Helper: Find similar command for typo detection ---------- */
   const findSimilarCommand = (input: string): string | null => {
     const KNOWN_COMMANDS = ['projects', 'my', 'team', 'assign', 'undo', 'members', 'next', 'deadlines', 'reset', 'commands'];
@@ -394,6 +419,11 @@ export function useChatboxController() {
       // prevent spam on rerenders
       if (alertedThisOpenRef.current) return;
       alertedThisOpenRef.current = true;
+
+      if (messagesRef.current.length > 0) {
+        updateSuggestions();
+        return;
+      }
 
       try {
         // Fetch all projects
