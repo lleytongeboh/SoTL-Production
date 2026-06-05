@@ -30,8 +30,14 @@ const AvatarMenu = () => {
     };
 
     const handleLogout = () => {
+      logout();
       sessionStorage.removeItem('token');
+      sessionStorage.removeItem('accessToken');
+      sessionStorage.removeItem('jwt');
+      sessionStorage.removeItem('userRole');
       localStorage.removeItem('token');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('jwt');
       sessionStorage.removeItem('__chatbox_refreshed__');
 
       window.location.href = '/login'; // FULL refresh
