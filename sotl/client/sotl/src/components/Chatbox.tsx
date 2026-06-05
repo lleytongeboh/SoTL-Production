@@ -79,6 +79,16 @@ const Chatbox: React.FC = () => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const scrollFrame = requestAnimationFrame(() => {
+      endRef.current?.scrollIntoView({ behavior: 'auto' });
+    });
+
+    return () => cancelAnimationFrame(scrollFrame);
+  }, [isOpen]);
+
   if (!token) return null;
 
   return (
