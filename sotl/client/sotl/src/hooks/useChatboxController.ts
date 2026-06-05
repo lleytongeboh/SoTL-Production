@@ -22,23 +22,8 @@ import {
 
 import { uploadEvidenceFile } from '../services/uploads.service';
 
-const CHATBOX_MESSAGES_KEY = 'chatboxMessages';
-const CHATBOX_MESSAGES_LIMIT = 100;
-
-const readStoredMessages = (): Message[] => {
-  try {
-    const raw = sessionStorage.getItem(CHATBOX_MESSAGES_KEY);
-    if (!raw) return [];
-
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-};
-
 export function useChatboxController() {
-  const [messages, setMessages] = useState<Message[]>(readStoredMessages);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<UiTask | null>(null);
@@ -56,6 +41,7 @@ export function useChatboxController() {
   const token = useAuthToken();
   const alertedThisOpenRef = useRef(false);
   const messagesRef = useRef<Message[]>(messages);
+  const previousTokenRef = useRef<string | null | undefined>(undefined);
 
 
   // TEMP role (keep as you had)
@@ -63,26 +49,33 @@ export function useChatboxController() {
 
   useEffect(() => {
     messagesRef.current = messages;
-
-    try {
-      sessionStorage.setItem(
-        CHATBOX_MESSAGES_KEY,
-        JSON.stringify(messages.slice(-CHATBOX_MESSAGES_LIMIT))
-      );
-    } catch {
-      // Chat history is helpful, but it should never block the assistant.
-    }
   }, [messages]);
 
-  // project selection persisted
-  const [activeProjectId, setActiveProjectId] = useState<string>(
-    localStorage.getItem('activeProjectId') || ''
-  );
-  const [activeProjectTitle, setActiveProjectTitle] = useState<string>(
-    localStorage.getItem('activeProjectTitle') || ''
-  );
+  const [activeProjectId, setActiveProjectId] = useState<string>('');
+  const [activeProjectTitle, setActiveProjectTitle] = useState<string>('');
 
   const [projects, setProjects] = useState<ProjectItem[]>([]);
+
+  useEffect(() => {
+    if (previousTokenRef.current === undefined) {
+      previousTokenRef.current = token;
+      return;
+    }
+
+    if (previousTokenRef.current === token) return;
+
+    previousTokenRef.current = token;
+    alertedThisOpenRef.current = false;
+    messagesRef.current = [];
+    setMessages([]);
+    setInput('');
+    setSelectedTask(null);
+    setPendingFile(null);
+    setPendingAssignment(null);
+    setProjects([]);
+    setActiveProjectId('');
+    setActiveProjectTitle('');
+  }, [token]);
 
   // deadlines moved to hook
   const { deadlines, loading: deadlinesLoading, error: deadlinesError } = useDeadlines(isOpen, token);
@@ -571,15 +564,6 @@ export function useChatboxController() {
 
   /* ---------- Welcome ---------- */
   // (removed - alerts now provide instructions)
-
-  /* ---------- Persist project info ---------- */
-  useEffect(() => {
-    localStorage.setItem('activeProjectId', activeProjectId || '');
-  }, [activeProjectId]);
-
-  useEffect(() => {
-    localStorage.setItem('activeProjectTitle', activeProjectTitle || '');
-  }, [activeProjectTitle]);
 
   /* ---------- Send ---------- */
   const handleSend = async () => {
@@ -1115,8 +1099,6 @@ Keep it concise for a chatbox interface.`;
         if (!id) {
           setActiveProjectId('');
           setActiveProjectTitle('');
-          localStorage.removeItem('activeProjectId');
-          localStorage.removeItem('activeProjectTitle');
           pushSystem('🧹 Project selection cleared. Type `projects` to choose again.');
           return;
         }
