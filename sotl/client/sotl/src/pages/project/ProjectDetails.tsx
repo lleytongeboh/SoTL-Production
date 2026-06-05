@@ -35,6 +35,7 @@ type ProjectDetailsSection = {
   group: Group;
   project: Project;
   tasks: ChatTask[];
+  isSelectedProject?: boolean;
 };
 
 const ProjectDetails: React.FC = () => {
@@ -143,6 +144,32 @@ const ProjectDetails: React.FC = () => {
     }
   };
 
+  const getOrderedProjectSections = (): ProjectDetailsSection[] => {
+    if (!selectedGroup || !selectedProject) {
+      return [];
+    }
+
+    return [
+      {
+        group: selectedGroup,
+        project: selectedProject,
+        tasks: taskList,
+        isSelectedProject: true,
+      },
+      ...extraProjectSections.map((section) => ({
+        ...section,
+        isSelectedProject: false,
+      })),
+    ].sort((a, b) => {
+      const taskCountDiff = b.tasks.length - a.tasks.length;
+      if (taskCountDiff !== 0) {
+        return taskCountDiff;
+      }
+
+      return a.project.title.localeCompare(b.project.title);
+    });
+  };
+
   const withoutGroupContent = (): React.ReactNode => {
     return (
       <React.Fragment>
@@ -206,7 +233,8 @@ const ProjectDetails: React.FC = () => {
     project = selectedProject,
     group = selectedGroup,
     tasks = taskList,
-    isSelectedProject = true
+    isSelectedProject = true,
+    isFirstSection = isSelectedProject
   ): React.ReactNode => {
     const projectProgress = getProjectProgress(project);
     const teamProgress = getTeamProgress(project, tasks);
@@ -216,7 +244,7 @@ const ProjectDetails: React.FC = () => {
       .sort((a, b) => a.order - b.order);
 
     return (
-      <Box textAlign={'left'} sx={isSelectedProject ? undefined : { borderTop: '1px solid #e0e0e0', mt: 6, pt: 6 }}>
+      <Box textAlign={'left'} sx={isFirstSection ? undefined : { borderTop: '1px solid #e0e0e0', mt: 6, pt: 6 }}>
         <div className='flex items-center justify-between mb-8'>
           <p className="title">{project?.title}</p>
           <IconButton component={Link} to='edit' state={isSelectedProject ? undefined : { project }}>
@@ -295,14 +323,25 @@ const ProjectDetails: React.FC = () => {
             {group?.team_members.map((member) => <GroupMemberRow key={member.student_id} member={member} />)}
           </List>
         </>
-        {isSelectedProject && extraProjectSections.map((section) => (
-          <React.Fragment key={section.project._id}>
-            {projectDetails(section.project, section.group, section.tasks, false)}
-          </React.Fragment>
-        ))}
       </Box>
     );
   };
+
+  const orderedProjectDetails = (): React.ReactNode => (
+    <>
+      {getOrderedProjectSections().map((section, index) => (
+        <React.Fragment key={section.project._id}>
+          {projectDetails(
+            section.project,
+            section.group,
+            section.tasks,
+            Boolean(section.isSelectedProject),
+            index === 0
+          )}
+        </React.Fragment>
+      ))}
+    </>
+  );
 
   const fetchData = async (requestId: number) => {
     try {
@@ -364,7 +403,7 @@ const ProjectDetails: React.FC = () => {
           /* Has Group */
           hasProject ?
             /* Has Project */
-            projectDetails() :
+            orderedProjectDetails() :
             /* No Project */
             withoutProjectContent() :
           /* No Group */
