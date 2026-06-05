@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectDB from "./database";
 import deadlinesRoutes from './routes/deadlinesRoutes';
 import chatTasksRoutes from "./routes/chatTasksRoutes";
+import { uploadsDir } from "./routes/uploadRoutes";
 
 import Routes, {
   NotificationRouter,
@@ -46,6 +47,8 @@ const app: Express = express();
 const port = Number(process.env.BACKEND_PORT || 5000);
 const http = createServer(app);
 
+app.set("trust proxy", 1);
+
 app.use(
   cors({
     origin: "*", // dev only
@@ -75,7 +78,7 @@ app.use("/api/gamification", GamificationRouter);
 
 app.use('/api/deadlines', deadlinesRoutes);
 
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(uploadsDir));
 app.use("/api/uploads", uploadRoutes);
 
 // Evaluation module routers

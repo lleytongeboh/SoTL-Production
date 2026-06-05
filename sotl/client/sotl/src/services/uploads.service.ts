@@ -14,7 +14,8 @@ export async function uploadEvidenceFile(file: File, token: string): Promise<str
   const data = await res.json();
   if (!res.ok) throw new Error(data?.message || "Upload failed");
 
-  // backend returns: { url: "/uploads/..." }
-  // store as full URL (safer for later viewing)
-  return `http://localhost:5000${data.url}`;
+  // Prefer the deployed/backend URL. Fall back to the current site origin.
+  if (data?.absoluteUrl) return data.absoluteUrl;
+  if (data?.url) return new URL(data.url, window.location.origin).toString();
+  throw new Error("Upload response missing file URL");
 }
