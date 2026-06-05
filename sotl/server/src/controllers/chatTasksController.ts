@@ -11,6 +11,20 @@ function getBaseUrl(req: AuthRequest): string {
   return `${req.protocol}://${req.get("host")}`;
 }
 
+function encodeUploadPath(pathname: string): string {
+  return pathname
+    .split("/")
+    .map((segment, index) => {
+      if (index === 0) return segment;
+      try {
+        return encodeURIComponent(decodeURIComponent(segment));
+      } catch {
+        return encodeURIComponent(segment).replace(/%25([0-9A-Fa-f]{2})/g, "%$1");
+      }
+    })
+    .join("/");
+}
+
 function getPublicEvidenceLink(req: AuthRequest, evidenceLink?: string | null): string {
   const raw = String(evidenceLink || "").trim();
   if (!raw) return "";
@@ -18,16 +32,19 @@ function getPublicEvidenceLink(req: AuthRequest, evidenceLink?: string | null): 
   const baseUrl = getBaseUrl(req);
 
   if (raw.startsWith("/uploads/")) {
-    return `${baseUrl}${raw}`;
+    return `${baseUrl}${encodeUploadPath(raw)}`;
   }
 
   try {
     const url = new URL(raw);
     if (url.pathname.startsWith("/uploads/")) {
-      return `${baseUrl}${url.pathname}${url.search}`;
+      return `${baseUrl}${encodeUploadPath(url.pathname)}${url.search}`;
     }
   } catch {
-    return raw;
+    const uploadPathMatch = raw.match(/\/uploads\/[^?#]*/);
+    if (uploadPathMatch) {
+      return `${baseUrl}${encodeUploadPath(uploadPathMatch[0])}`;
+    }
   }
 
   return raw;

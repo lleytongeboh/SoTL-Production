@@ -9,10 +9,24 @@ export const uploadsDir = path.resolve(process.cwd(), "uploads");
 
 fs.mkdirSync(uploadsDir, { recursive: true });
 
+const sanitizeFilename = (filename: string): string => {
+  const ext = path.extname(filename);
+  const name = path.basename(filename, ext);
+  const safeName = name
+    .normalize("NFKD")
+    .replace(/[^\w.-]+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 120);
+  const safeExt = ext.replace(/[^\w.]+/g, "").slice(0, 20);
+
+  return `${safeName || "evidence"}${safeExt || ""}`;
+};
+
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, uploadsDir),
   filename: (_req, file, cb) =>
-    cb(null, `${Date.now()}-${file.originalname}`),
+    cb(null, `${Date.now()}-${sanitizeFilename(file.originalname)}`),
 });
 
 const upload = multer({
@@ -28,7 +42,8 @@ router.post(
     const f = (req as any).file;
     if (!f) return res.status(400).json({ message: "No file uploaded" });
     const baseUrl = `${req.protocol}://${req.get("host")}`;
-    return res.json({ url: `/uploads/${f.filename}`, absoluteUrl: `${baseUrl}/uploads/${f.filename}` });
+    const uploadPath = `/uploads/${encodeURIComponent(f.filename)}`;
+    return res.json({ url: uploadPath, absoluteUrl: `${baseUrl}${uploadPath}` });
   }
 );
 
