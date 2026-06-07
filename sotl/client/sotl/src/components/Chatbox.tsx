@@ -39,6 +39,7 @@ const Chatbox: React.FC = () => {
     onUndoTaskClick,
     onConfirmDoneYes,
     onConfirmDoneNo,
+    onReplaceEvidence,
     onPendingFileInputChange,
     onUploadAndSubmit,
     onUploadCancel,
@@ -284,12 +285,12 @@ const Chatbox: React.FC = () => {
                       </Typography>
 
                       <Typography sx={{ fontSize: 12, color: '#666', mb: 1 }}>
-                        Click a task to mark it done and upload evidence.
+                        Click a task to update its status or replace submitted evidence.
                       </Typography>
 
                       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.8 }}>
                         {m.tasks.map((t) => {
-                          const isClickable = t.status !== 'done' && t.status !== 'cancelled';
+                          const isClickable = t.status !== 'cancelled';
                           const taskOverdue = isOverdue(t.dueAt, t.status);
                           const daysLate = taskOverdue ? daysOverdue(t.dueAt, t.status) : 0;
                           
@@ -511,6 +512,19 @@ const Chatbox: React.FC = () => {
                             }}
                           />
                         )}
+                        {t.status === 'done' && (
+                          <Chip
+                            label="Replace Evidence"
+                            onClick={() => onReplaceEvidence(t)}
+                            sx={{
+                              bgcolor: '#2196f3',
+                              color: '#fff',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              '&:hover': { bgcolor: '#1976d2' },
+                            }}
+                          />
+                        )}
                         <Chip
                           label="💡 Get Help"
                           onClick={onGetHelp}
@@ -590,7 +604,7 @@ const Chatbox: React.FC = () => {
                       }}
                     >
                       <Typography sx={{ fontWeight: 600, mb: 1.2, color: '#333', fontSize: 14 }}>
-                        📎 Upload evidence (PDF/DOC/DOCX) for **{t.title}**
+                        {t.status === 'done' ? 'Replace' : 'Upload'} evidence (PDF/DOC/DOCX) for {t.title}
                       </Typography>
                       <input
                         type="file"
@@ -608,7 +622,7 @@ const Chatbox: React.FC = () => {
 
                       <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
                         <Chip
-                          label="⬆️ Upload & Submit"
+                          label={t.status === 'done' ? 'Upload Replacement' : 'Upload & Submit'}
                           onClick={async () => onUploadAndSubmit(t)}
                           sx={{
                             bgcolor: '#2196f3',

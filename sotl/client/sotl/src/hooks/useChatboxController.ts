@@ -1431,6 +1431,15 @@ Keep it concise for a chatbox interface.`;
     setMessages((p) => [...p, { sender: 'system', kind: 'upload_evidence', task: t }]);
   };
 
+  const onReplaceEvidence = (t: UiTask) => {
+    setSelectedTask(t);
+    setMessages((p) => [
+      ...p,
+      { sender: 'user', text: 'replace evidence' },
+      { sender: 'system', kind: 'upload_evidence', task: t },
+    ]);
+  };
+
   const onConfirmDoneNo = () => {
     setSelectedTask(null);
     setMessages((p) => [...p, { sender: 'system', text: 'Okay, not marking it done.' }]);
@@ -1459,7 +1468,12 @@ Keep it concise for a chatbox interface.`;
 
       setMessages((p) => [
         ...p,
-        { sender: 'system', text: `✔ Marked done: **${t.title}**\n📎 Evidence uploaded.` },
+        {
+          sender: 'system',
+          text: t.status === 'done'
+            ? `Evidence replaced for **${t.title}**.`
+            : `✔ Marked done: **${t.title}**\n📎 Evidence uploaded.`,
+        },
       ]);
     } catch (err: any) {
       pushOrReplaceLastSystemError(`${err?.message || 'Upload/submit failed'}`);
@@ -1585,6 +1599,7 @@ Keep it concise for a chatbox interface.`;
     onUndoTaskClick,
     onConfirmDoneYes,
     onConfirmDoneNo,
+    onReplaceEvidence,
     onPendingFileInputChange,
     onUploadAndSubmit,
     onUploadCancel,
